@@ -6,18 +6,16 @@ d3.csv("music-data.csv").then(function (data) {
 
     const keys = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
     const angles = keys.map((_, i) => (Math.PI * 2 / keys.length) * i);
+    const rotation = Math.PI / 6;
 
-    const rotation = Math.PI / 6;  // 30도 회전 각도
+    const scaleFactor = 1.3;
+    const bigRadius = radius * scaleFactor;
 
-    // 시간대별로 그룹핑
     const grouped = d3.group(data, d => {
-        const [hourStr] = d["시간"].split(":");
-        const hour = parseInt(hourStr);
+        const hour = +d["시간"].split(":")[0];
         return `${hour}:00`;
     });
-
-    const rows = Array.from(grouped.entries()); // [[ '10:00', [track1, track2] ], [ '11:00', [...]]]
-
+    const rows = Array.from(grouped.entries());
     const svgHeight = rows.length * (hexSize + padding) + 50;
 
     const svg = d3.select("#chart")
@@ -27,89 +25,61 @@ d3.csv("music-data.csv").then(function (data) {
 
     const defs = svg.append("defs");
 
+    defs.append("filter")
+        .attr("id", "blur")
+        .append("feGaussianBlur")
+        .attr("stdDeviation", 5);
+
     rows.forEach(([hour, tracks], rowIdx) => {
         tracks.forEach((track, colIdx) => {
             const cx = padding + colIdx * (hexSize + padding) + radius;
             const cy = padding + rowIdx * (hexSize + padding) + radius;
 
-            const values = keys.map(key => +track[key]);
-            const hexPoints = values.map((val, i) => {
-                const r = (val / 100) * radius;
-                const angle = angles[i];
+            const values = keys.map(k => +track[k]);
+            const hexPoints = values.map((v, i) => {
+                const r = Math.min((v / 100) * radius * scaleFactor, radius);
+                const ang = angles[i];
                 return [
-                    cx + r * Math.cos(angle - Math.PI / 2),
-                    cy + r * Math.sin(angle - Math.PI / 2)
+                    cx + r * Math.cos(ang - Math.PI / 2),
+                    cy + r * Math.sin(ang - Math.PI / 2)
                 ];
             });
 
-            const maskId = `hex-mask-${rowIdx}-${colIdx}`;
-
-            // 마스크 정의
-            defs.append("mask")
-                .attr("id", maskId)
+            const clipId = `hex-clip-${rowIdx}-${colIdx}`;
+            defs.append("clipPath")
+                .attr("id", clipId)
                 .append("polygon")
-                .attr("points", hexPoints.map(p => p.join(",")).join(" "))
-                .attr("fill", "white");
+                .attr("points", hexPoints.map(p => p.join(",")).join(" "));
 
-            // 육각형 그룹을 묶는 <g>
-            const group = svg.append("g")
-                .attr("transform", `translate(0,0)`)
-                .attr("cursor", "pointer");
+            const group = svg.append("g").attr("cursor", "pointer");
 
-            // 마스크를 적용한 그라데이션 그룹
-            const gradGroup = group.append("g").attr("mask", `url(#${maskId})`);
-
-            // 육각형 꼭짓점 방향으로 부채꼴 그라데이션 영역 생성 (30도 회전 적용)
             keys.forEach((key, i) => {
                 const color = colors[key];
+                const ang1 = angles[i] + rotation;
+                const ang2 = angles[(i + 1) % keys.length] + rotation;
 
-                // 30도 회전된 각도 사용
-                const angle = angles[i] + rotation;
-                const nextAngle = angles[(i + 1) % keys.length] + rotation;
+                // 값에 따라 조절하지 않고 bigRadius 고정 사용
+                const x1 = cx + bigRadius * Math.cos(ang1 - Math.PI / 2);
+                const y1 = cy + bigRadius * Math.sin(ang1 - Math.PI / 2);
+                const x2 = cx + bigRadius * Math.cos(ang2 - Math.PI / 2);
+                const y2 = cy + bigRadius * Math.sin(ang2 - Math.PI / 2);
 
-                const x1 = cx + radius * Math.cos(angle - Math.PI / 2);
-                const y1 = cy + radius * Math.sin(angle - Math.PI / 2);
-                const x2 = cx + radius * Math.cos(nextAngle - Math.PI / 2);
-                const y2 = cy + radius * Math.sin(nextAngle - Math.PI / 2);
-
-                const gradId = `grad-${rowIdx}-${colIdx}-${i}`;
-
-                const grad = defs.append("linearGradient")
-                    .attr("id", gradId)
-                    .attr("gradientUnits", "userSpaceOnUse")
-                    .attr("x1", cx)
-                    .attr("y1", cy)
-                    .attr("x2", x1)
-                    .attr("y2", y1);
-
-                grad.append("stop")
-                    .attr("offset", "0%")
-                    .attr("stop-color", "white");
-
-                grad.append("stop")
-                    .attr("offset", "100%")
-                    .attr("stop-color", color);
-
-                gradGroup.append("path")
-                    .attr("d", `M ${cx},${cy} L ${x1},${y1} L ${x2},${y2} Z`)
-                    .attr("fill", `url(#${gradId})`);
+                group.append("path")
+                    .attr("d", `M${cx},${cy} L${x1},${y1} L${x2},${y2}Z`)
+                    .attr("fill", color)
+                    .attr("filter", "url(#blur)")
+                    .attr("clip-path", `url(#${clipId})`);
             });
 
-            // 육각형 테두리 (기존 각도 유지)
             group.append("polygon")
                 .attr("points", hexPoints.map(p => p.join(",")).join(" "))
                 .attr("fill", "none")
                 .attr("stroke", "#111")
                 .attr("stroke-width", 1);
 
-            // 그룹 위치 이동
-            group.attr("transform", `translate(0,0)`); // cx, cy 이미 계산에 반영됨
-
-            // 클릭 이벤트 등록
             group.on("click", () => showDetail(track));
         });
 
-        // 시간 라벨
         svg.append("text")
             .attr("x", 10)
             .attr("y", padding + rowIdx * (hexSize + padding) + 5)
@@ -118,7 +88,6 @@ d3.csv("music-data.csv").then(function (data) {
             .attr("fill", "#333");
     });
 
-    // 상세보기 함수
     function showDetail(track) {
         const detailSvg = d3.select("#detail-svg");
         detailSvg.selectAll("*").remove();
@@ -126,93 +95,80 @@ d3.csv("music-data.csv").then(function (data) {
         const detailDiv = d3.select("#detail-values");
         detailDiv.html("");
 
-        const detailWidth = 280;
-        const detailHeight = 280;
-        const cx = detailWidth / 2;
-        const cy = detailHeight / 2;
-        const detailRadius = 100;
-
-        let defs = detailSvg.select("defs");
-        if (!defs.empty()) defs.remove();
-        defs = detailSvg.append("defs");
-
-        const values = keys.map(k => +track[k]);
+        const detailW = 280, detailH = 280;
+        const cx = detailW / 2, cy = detailH / 2;
+        const detailR = 100;
+        const scaleFactor = 1.3;
+        const keys = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
         const angles = keys.map((_, i) => (Math.PI * 2 / keys.length) * i);
-        const rotation = Math.PI / 6;  // 30도 회전
+        const rotation = Math.PI / 6;
 
-        const hexPoints = values.map((val, i) => {
-            const r = (val / 100) * detailRadius;
-            const angle = angles[i];
+        // defs 초기화 및 clipPath 설정
+        const defsD = detailSvg.append("defs");
+        defsD.append("filter")
+            .attr("id", "detail-blur")
+            .append("feGaussianBlur")
+            .attr("stdDeviation", 13);
+
+        const vals = keys.map(k => +track[k]);
+        // 점 좌표 계산 (각 값에 비례, detailR 및 scaleFactor 적용)
+        const points = vals.map((v, i) => {
+            // 값에 따른 반경, 최대 detailR 넘지 않도록 제한
+            const r = Math.min((v / 100) * detailR * scaleFactor, detailR);
+            const ang = angles[i] + rotation;
             return [
-                cx + r * Math.cos(angle - Math.PI / 2),
-                cy + r * Math.sin(angle - Math.PI / 2)
+                cx + r * Math.cos(ang - Math.PI / 2),
+                cy + r * Math.sin(ang - Math.PI / 2)
             ];
         });
 
-        const maskId = "detail-hex-mask";
-        defs.append("mask")
-            .attr("id", maskId)
+        const clipDetailId = "detail-clip-" + Math.random().toString(36).slice(2, 10);
+
+        defsD.append("clipPath")
+            .attr("id", clipDetailId)
             .append("polygon")
-            .attr("points", hexPoints.map(p => p.join(",")).join(" "))
-            .attr("fill", "white");
+            .attr("points", points.map(p => p.join(",")).join(" "));
 
-        const gradGroup = detailSvg.append("g").attr("mask", `url(#${maskId})`);
-
+        // 색깔 부드러운 영역 생성 (6각형을 채우는 각 삼각형)
+        const group = detailSvg.append("g");
         keys.forEach((key, i) => {
             const color = colors[key];
+            const ang1 = angles[i] + rotation;
+            const ang2 = angles[(i + 1) % keys.length] + rotation;
 
-            const angle = angles[i] + rotation;
-            const nextAngle = angles[(i + 1) % keys.length] + rotation;
+            // 두 꼭짓점 좌표 (최대 반경 detailR 고정)
+            const x1 = cx + detailR * Math.cos(ang1 - Math.PI / 2);
+            const y1 = cy + detailR * Math.sin(ang1 - Math.PI / 2);
+            const x2 = cx + detailR * Math.cos(ang2 - Math.PI / 2);
+            const y2 = cy + detailR * Math.sin(ang2 - Math.PI / 2);
 
-            const x1 = cx + detailRadius * Math.cos(angle - Math.PI / 2);
-            const y1 = cy + detailRadius * Math.sin(angle - Math.PI / 2);
-            const x2 = cx + detailRadius * Math.cos(nextAngle - Math.PI / 2);
-            const y2 = cy + detailRadius * Math.sin(nextAngle - Math.PI / 2);
-
-            const gradId = `detail-grad-${i}`;
-
-            const grad = defs.append("linearGradient")
-                .attr("id", gradId)
-                .attr("gradientUnits", "userSpaceOnUse")
-                .attr("x1", cx)
-                .attr("y1", cy)
-                .attr("x2", x1)
-                .attr("y2", y1);
-
-            grad.append("stop")
-                .attr("offset", "0%")
-                .attr("stop-color", "white")
-                .attr("stop-opacity", 0);
-
-            grad.append("stop")
-                .attr("offset", "100%")
-                .attr("stop-color", color)
-                .attr("stop-opacity", 1);
-
-            gradGroup.append("path")
-                .attr("d", `M ${cx},${cy} L ${x1},${y1} L ${x2},${y2} Z`)
-                .attr("fill", `url(#${gradId})`);
+            group.append("path")
+                .attr("d", `M${cx},${cy} L${x1},${y1} L${x2},${y2}Z`)
+                .attr("fill", color)
+                .attr("filter", "url(#detail-blur)")
+                .attr("clip-path", `url(#${clipDetailId})`);
         });
 
+        // 외곽선 폴리곤
         detailSvg.append("polygon")
-            .attr("points", hexPoints.map(p => p.join(",")).join(" "))
+            .attr("points", points.map(p => p.join(",")).join(" "))
             .attr("fill", "none")
             .attr("stroke", "#111")
             .attr("stroke-width", 2);
 
-        // 기준 원 추가
+        // 기준 원형 점선
         detailSvg.append("circle")
             .attr("cx", cx)
             .attr("cy", cy)
-            .attr("r", detailRadius)
+            .attr("r", detailR)
             .attr("fill", "none")
             .attr("stroke", "#ccc")
             .attr("stroke-dasharray", "3 2");
 
-        // 상세 데이터 값 표시
-        detailDiv.append("div").html(`<b>음악명:</b> ${track["음악명 - 아티스트"] || track["음악명 - 아티스트"] || "정보 없음"}`);
-        keys.forEach((key, i) => {
-            detailDiv.append("div").html(`${key}: ${track[key]}`);
+        // 텍스트 정보 표시
+        detailDiv.append("div").html(`<b>음악명:</b> ${track["음악명 - 아티스트"] || track["음악명"] || "정보 없음"}`);
+        keys.forEach(k => {
+            detailDiv.append("div").html(`${k}: ${track[k]}`);
         });
     }
 });
