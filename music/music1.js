@@ -111,9 +111,9 @@ d3.csv("music-data.csv").then(function (data) {
             .attr("stdDeviation", 13);
 
         const vals = keys.map(k => +track[k]);
-        // 점 좌표 계산 (각 값에 비례, detailR 및 scaleFactor 적용)
+
+        // 현재 트랙 값 기반 점 좌표 계산
         const points = vals.map((v, i) => {
-            // 값에 따른 반경, 최대 detailR 넘지 않도록 제한
             const r = Math.min((v / 100) * detailR * scaleFactor, detailR);
             const ang = angles[i] + rotation;
             return [
@@ -136,7 +136,6 @@ d3.csv("music-data.csv").then(function (data) {
             const ang1 = angles[i] + rotation;
             const ang2 = angles[(i + 1) % keys.length] + rotation;
 
-            // 두 꼭짓점 좌표 (최대 반경 detailR 고정)
             const x1 = cx + detailR * Math.cos(ang1 - Math.PI / 2);
             const y1 = cy + detailR * Math.sin(ang1 - Math.PI / 2);
             const x2 = cx + detailR * Math.cos(ang2 - Math.PI / 2);
@@ -148,6 +147,28 @@ d3.csv("music-data.csv").then(function (data) {
                 .attr("filter", "url(#detail-blur)")
                 .attr("clip-path", `url(#${clipDetailId})`);
         });
+
+        // 평균값 도형 추가
+        const avgVals = keys.map(k => {
+            const sum = d3.sum(data, d => +d[k]);
+            return sum / data.length;
+        });
+
+        const avgPoints = avgVals.map((v, i) => {
+            const r = Math.min((v / 100) * detailR * scaleFactor, detailR);
+            const ang = angles[i] + rotation;
+            return [
+                cx + r * Math.cos(ang - Math.PI / 2),
+                cy + r * Math.sin(ang - Math.PI / 2)
+            ];
+        });
+
+        detailSvg.append("polygon")
+            .attr("points", avgPoints.map(p => p.join(",")).join(" "))
+            .attr("fill", "none")
+            .attr("stroke", "#444")
+            .attr("stroke-width", 1.5)
+            .attr("stroke-dasharray", "4 2");
 
         // 외곽선 폴리곤
         detailSvg.append("polygon")
@@ -171,4 +192,5 @@ d3.csv("music-data.csv").then(function (data) {
             detailDiv.append("div").html(`${k}: ${track[k]}`);
         });
     }
+
 });
