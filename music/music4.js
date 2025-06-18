@@ -22,6 +22,38 @@ d3.csv("music-data.csv").then(function (data) {
         .attr("width", width)
         .attr("height", height);
 
+    // defs 생성 (blur 필터 + radialGradient)
+    const defs = svg.append("defs");
+
+    defs.append("filter")
+        .attr("id", "glow-blur")
+        .append("feGaussianBlur")
+        .attr("stdDeviation", 8);
+
+    // 각 색상별 radialGradient 생성
+    keys.forEach(key => {
+        const grad = defs.append("radialGradient")
+            .attr("id", `grad-${key}`)
+            .attr("cx", "50%")
+            .attr("cy", "50%")
+            .attr("r", "50%");
+
+        grad.append("stop")
+            .attr("offset", "0%")
+            .attr("stop-color", colors[key])
+            .attr("stop-opacity", 0.8);
+
+        grad.append("stop")
+            .attr("offset", "80%")
+            .attr("stop-color", colors[key])
+            .attr("stop-opacity", 0);
+
+        grad.append("stop")
+            .attr("offset", "100%")
+            .attr("stop-color", colors[key])
+            .attr("stop-opacity", 0);
+    });
+
     // 1. 각 행마다 값 내림차순 정렬
     const rowData = data.map((d, i) => {
         const values = keys.map(k => ({
@@ -114,84 +146,81 @@ d3.csv("music-data.csv").then(function (data) {
     });
 
     // 8. hover용 가로선 + 텍스트 강조
-const hoverLine = svg.append("line")
-    .attr("x1", 0)
-    .attr("x2", width)
-    .attr("stroke", "#999")
-    .attr("stroke-width", 1)
-    .attr("opacity", 0);
+    const hoverLine = svg.append("line")
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("stroke", "#999")
+        .attr("stroke-width", 1)
+        .attr("opacity", 0);
 
-// hover 시 원 표시를 위한 그룹 추가
-const hoverCirclesGroup = svg.append("g")
-    .attr("class", "hover-circles")
-    .attr("opacity", 0);
+    // hover 시 원 표시를 위한 그룹 추가
+    const hoverCirclesGroup = svg.append("g")
+        .attr("class", "hover-circles")
+        .attr("opacity", 0);
 
-svg.append("rect")
-    .attr("x", 0)
-    .attr("y", paddingTop)
-    .attr("width", width)
-    .attr("height", height - paddingTop)
-    .attr("fill", "transparent")
-    .on("mousemove", function (event) {
-        const [_, mouseY] = d3.pointer(event);
-        let idx = Math.floor((mouseY - paddingTop + heightPerValue / 2) / heightPerValue);
-        if (idx < 0) idx = 0;
-        if (idx >= data.length) idx = data.length - 1;
+    svg.append("rect")
+        .attr("x", 0)
+        .attr("y", paddingTop)
+        .attr("width", width)
+        .attr("height", height - paddingTop)
+        .attr("fill", "transparent")
+        .on("mousemove", function (event) {
+            const [_, mouseY] = d3.pointer(event);
+            let idx = Math.floor((mouseY - paddingTop + heightPerValue / 2) / heightPerValue);
+            if (idx < 0) idx = 0;
+            if (idx >= data.length) idx = data.length - 1;
 
-        const yPos = paddingTop + idx * heightPerValue + 5;
+            const yPos = paddingTop + idx * heightPerValue + 5;
 
-        hoverLine
-            .attr("y1", yPos)
-            .attr("y2", yPos)
-            .attr("opacity", 1);
+            hoverLine
+                .attr("y1", yPos)
+                .attr("y2", yPos)
+                .attr("opacity", 1);
 
-        labelsGroup.selectAll("text")
-            .attr("font-weight", "normal")
-            .attr("fill", "#555");
+            labelsGroup.selectAll("text")
+                .attr("font-weight", "normal")
+                .attr("fill", "#555");
 
-        labelsGroup.selectAll("text")
-            .filter(function () {
-                return +d3.select(this).attr("data-index") === idx;
-            })
-            .attr("font-weight", "bold")
-            .attr("fill", "#000");
+            labelsGroup.selectAll("text")
+                .filter(function () {
+                    return +d3.select(this).attr("data-index") === idx;
+                })
+                .attr("font-weight", "bold")
+                .attr("fill", "#000");
 
-        // 1) hoverCirclesGroup 초기화
-        hoverCirclesGroup.selectAll("circle").remove();
+            // hoverCirclesGroup 초기화
+            hoverCirclesGroup.selectAll("circle").remove();
 
-        // 2) 해당 행의 값 가져오기
-        const hoveredRow = rowData[idx];
+            // 해당 행의 값 가져오기
+            const hoveredRow = rowData[idx];
 
-        // 3) 각 항목별 원 그리기
-        hoveredRow.values.forEach((d, colIdx) => {
-            // 원 반지름을 값 크기에 비례 (적절한 스케일 적용)
-            const radius = (maxWidth * (d.value / 100)) / 2;
+            // 각 항목별 원 그리기
+            hoveredRow.values.forEach((d, colIdx) => {
+                const radius = (maxWidth * (d.value / 100)) / 2;
 
-            // 원 중심 x, y 좌표 (가로선 위, 각 항목 위치)
-            const cx = paddingSides + colIdx * colSpacing;
-            const cy = yPos;
+                const cx = paddingSides + colIdx * colSpacing;
+                const cy = yPos;
 
-            hoverCirclesGroup.append("circle")
-                .attr("cx", cx)
-                .attr("cy", cy)
-                .attr("r", radius)
-                .attr("fill", colors[d.key])
-                .attr("opacity", 0.5);
+                hoverCirclesGroup.append("circle")
+                    .attr("cx", cx)
+                    .attr("cy", cy)
+                    .attr("r", radius)
+                    .attr("fill", `url(#grad-${d.key})`)
+                    .attr("filter", "url(#glow-blur)")
+                    .attr("opacity", 0.5);
+            });
+
+            hoverCirclesGroup.attr("opacity", 1);
+        })
+        .on("mouseout", function () {
+            hoverLine.attr("opacity", 0);
+            labelsGroup.selectAll("text")
+                .attr("font-weight", "normal")
+                .attr("fill", "#555");
+
+            hoverCirclesGroup.attr("opacity", 0);
+            hoverCirclesGroup.selectAll("circle").remove();
         });
-
-        // 4) 원 그룹 보이기
-        hoverCirclesGroup.attr("opacity", 1);
-    })
-    .on("mouseout", function () {
-        hoverLine.attr("opacity", 0);
-        labelsGroup.selectAll("text")
-            .attr("font-weight", "normal")
-            .attr("fill", "#555");
-
-        // 원 그룹 숨기기
-        hoverCirclesGroup.attr("opacity", 0);
-        hoverCirclesGroup.selectAll("circle").remove();
-    });
 
     // 9. 열 제목 (동적으로 가장 처음 나타나는 key명 출력)
     const firstRowKeys = rowData[0].values.map(d => d.key);
