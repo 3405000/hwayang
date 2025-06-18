@@ -5,14 +5,6 @@ d3.csv("music-data.csv").then(function (data) {
     const padding = 10;
 
     const keys = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
-    const colors = {
-        Energy: "#F94144",
-        Danceability: "#F3722C",
-        Happiness: "#F9C74F",
-        Acousticness: "#90BE6D",
-        Instrumentalness: "#43AA8B",
-        Liveness: "#577590"
-    };
 
     const angles = keys.map((_, i) => (Math.PI * 2 / keys.length) * i);
     const rotation = Math.PI / 6;
@@ -65,7 +57,7 @@ d3.csv("music-data.csv").then(function (data) {
             const group = svg.append("g").attr("cursor", "pointer");
 
             // drawHexagonShape 호출
-            drawHexagonShape(group, {x: cx, y: cy}, values, radius, colors, keys, {
+            drawHexagonShape(group, { x: cx, y: cy }, values, radius, colors, keys, {
                 rotation,
                 applyBlurFilterId: "blur",
                 clipPathId: clipId,
@@ -107,7 +99,7 @@ d3.csv("music-data.csv").then(function (data) {
         // clipPath는 drawHexagonShape 내부에서 처리 안하므로 직접 생성
         const points = vals.map((v, i) => {
             const r = Math.min((v / 100) * detailR * scaleFactor, detailR);
-            const ang = angles[i];
+            const ang = angles[i] + rotation;
             return [
                 cx + r * Math.cos(ang - Math.PI / 2),
                 cy + r * Math.sin(ang - Math.PI / 2)
@@ -124,7 +116,7 @@ d3.csv("music-data.csv").then(function (data) {
         const group = detailSvg.append("g");
 
         // drawHexagonShape 호출, 평균값 도형 포함
-        drawHexagonShape(group, {x: cx, y: cy}, vals, detailR, colors, keys, {
+        drawHexagonShape(group, { x: cx, y: cy }, vals, detailR, colors, keys, {
             rotation,
             applyBlurFilterId: "detail-blur",
             clipPathId: clipDetailId,
@@ -148,12 +140,64 @@ d3.csv("music-data.csv").then(function (data) {
             .attr("stroke", "#ccc")
             .attr("stroke-dasharray", "3 2");
 
-        // 텍스트 정보 표시
-        detailDiv.append("div").html(`<b>음악명:</b> ${track["음악명 - 아티스트"] || track["음악명"] || "정보 없음"}`);
-        keys.forEach(k => {
-            detailDiv.append("div").html(`${k}: ${track[k]}`);
+        // 각 키 이름 표시 (육각형 꼭짓점 근처)
+        keys.forEach((key, i) => {
+            const ang = angles[i] + rotation;
+            const labelRadius = detailR + 20;  // 꼭짓점 밖으로 20px 떨어뜨림
+            const x = cx + labelRadius * Math.cos(ang - Math.PI / 2);
+            const y = cy + labelRadius * Math.sin(ang - Math.PI / 2);
+
+            // 라디안을 도(degree)로 변환
+            const deg = (ang * 180 / Math.PI);
+
+            detailSvg.append("text")
+                .attr("x", x)
+                .attr("y", y)
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("font-size", 14)
+                .attr("fill", "#333")
+                // 회전 변환: 텍스트 위치 기준으로 deg도만큼 회전
+                .attr("transform", `rotate(${deg}, ${x}, ${y})`)
+                .text(key);
         });
+
+
+        // 텍스트 정보 표시
+        detailDiv.append("h3")
+            .text(track["음악명 - 아티스트"] || track["음악명"] || "정보 없음");
+
+        // 아티스트 정보가 있으면 추가
+        if (track["아티스트"]) {
+            detailDiv.append("div")
+                .text(track["아티스트"])
+                .style("font-size", "14px")
+                .style("color", "#444")
+                .style("margin-bottom", "8px");
+        }
+
+        keys.forEach(k => {
+            const row = detailDiv.append("div")
+                .style("display", "flex")
+                .style("justify-content", "space-between")
+                .style("margin", "2px 0");
+
+            row.append("span")
+                .text(k)
+                .style("text-align", "left");
+
+            row.append("span")
+                .html(`<b>${track[k]}</b>`)
+                .style("text-align", "right");
+        });
+
+        detailDiv.append("div")
+            .style("margin-top", "8px")
+            .style("font-size", "12px")
+            .style("color", "#666")
+            .text(`played at ${track["시간"] || "unknown"}`);
     }
+
 
     function drawHexagonShape(svgGroup, center, values, radius, colors, keys, options = {}) {
         const rotation = options.rotation || 0;
