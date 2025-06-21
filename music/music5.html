@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>음악 데이터 시각화5</title>
+  <link rel="stylesheet" href="style5.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>음악 데이터 시각화</h2>
+    <div class="section">
+      <div id="buttons">
+        <button onclick="showCircles('Energy')" class="active">Energy</button>
+        <button onclick="showCircles('Danceability')">Danceability</button>
+        <button onclick="showCircles('Happiness')">Happiness</button>
+        <button onclick="showCircles('Acousticness')">Acousticness</button>
+        <button onclick="showCircles('Instrumentalness')">Instrumentalness</button>
+        <button onclick="showCircles('Liveness')">Liveness</button>
+      </div>
+      <div id="circle-container"></div>
+      <div id="tooltip" class="tooltip"></div>
+    </div>
+  </div>
+  <script src="../shared/colors.js"></script>
+  <script src="music5.js"></script>
+</body>
+</html>
