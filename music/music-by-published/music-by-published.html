@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>발매년도별 음악 이중 원 시각화</title>
+  <link rel="stylesheet" href="music-by-published.style.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>발매년도별 음악 이중 원 시각화</h1>
+    <div class="content-wrapper">
+      <div id="year-circles"></div>
+      <div id="detail-panel">
+        <svg id="detail-svg" width="300" height="300"></svg>
+        <div id="detail-info"></div>
+      </div>
+    </div>
+  </div>
+  <script src="../music-colors.js"></script>
+  <script src="music-by-published.js"></script>
+</body>
+</html>
