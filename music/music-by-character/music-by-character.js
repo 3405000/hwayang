@@ -2,7 +2,7 @@
 let globalData = [];
 
 // CSV 데이터 로드
-d3.csv("music-data.csv").then(function(csvData) {
+d3.csv("../music-data.csv").then(function(csvData) {
   // 데이터 파싱 및 저장
   globalData = csvData.map(d => ({
     name: d["음악명"] || d["음악명"] || "",
