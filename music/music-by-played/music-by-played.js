@@ -4,6 +4,7 @@ d3.csv("../music-data.csv").then(function(data) {
   const processedData = data.map(d => ({
     name: d["음악명"],
     artist: d["아티스트"],
+    time: `${d["날짜"]} ${d["시간"]}`, // 날짜와 시간 결합
     attributes: {
       Energy: +d.Energy,
       Danceability: +d.Danceability,
@@ -57,7 +58,15 @@ function createRadialVisualization(data) {
     .data(arcs)
     .enter()
     .append("g")
-    .attr("class", "sector");
+    .attr("class", "sector")
+    .on("mouseover", function(event, d) {
+      // 상세 패널 업데이트
+      updateDetailPanel(d.data);
+    })
+    .on("mouseout", function() {
+      // 툴팁 숨기기
+      d3.select("#tooltip").style("opacity", 0);
+    });
 
   // 각 부채꼴에 대해 속성값 총합 계산 및 비율에 따른 반지름 분할
   sector.each(function(d) {
@@ -100,8 +109,6 @@ function createRadialVisualization(data) {
             .attr("stroke-width", 2);
         })
         .on("mouseout", function() {
-          // 툴팁 숨기기
-          d3.select("#tooltip").style("opacity", 0);
           // 호 스타일 복원
           d3.select(this)
             .attr("opacity", 0.8)
@@ -151,4 +158,70 @@ function createRadialVisualization(data) {
       .attr("class", "legend-label")
       .text(attr);
   });
+}
+
+// 상세 패널 업데이트 함수
+function updateDetailPanel(data) {
+  const svg = d3.select('#detail-svg');
+  svg.selectAll('*').remove();
+
+  const width = +svg.attr('width');
+  const height = +svg.attr('height');
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = Math.min(width, height) / 2;
+
+  // 검정 배경 원 그리기
+  svg.append('circle')
+    .attr('cx', centerX)
+    .attr('cy', centerY)
+    .attr('r', radius)
+    .attr('fill', 'black');
+
+  // 속성 배열
+  const attributes = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
+  const maxAngle = (60 * Math.PI) / 180; // 60도 (라디안)
+
+  // 각 속성별 부채꼴 그리기
+  attributes.forEach((attr, i) => {
+    const value = data.attributes[attr];
+    const startAngle = i * maxAngle;
+    const endAngle = startAngle + (value / 100) * maxAngle;
+
+    const arc = d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius)
+      .startAngle(startAngle)
+      .endAngle(endAngle);
+
+    svg.append('path')
+      .attr('d', arc)
+      .attr('transform', `translate(${centerX},${centerY})`)
+      .attr('fill', colors[attr])
+      .attr('opacity', 0.8)
+      .attr('stroke', 'white')
+      .attr('stroke-width', 1);
+  });
+
+  // 흰색 중심 원 그리기 (전체의 1/4 크기)
+  svg.append('circle')
+    .attr('cx', centerX)
+    .attr('cy', centerY)
+    .attr('r', radius / 4)
+    .attr('fill', 'white');
+
+  // 텍스트 정보 업데이트
+  const infoDiv = d3.select('#detail-info');
+  let infoText = `<strong>${data.name}</strong><br>`;
+  infoText += `<em>${data.artist}</em><br><br>`;
+  
+  // 속성 값 추가
+  attributes.forEach(attr => {
+    infoText += `<strong>${attr}:</strong> ${data.attributes[attr]}<br>`;
+  });
+  
+  // 시간 정보 추가
+  infoText += `<br><strong>시간:</strong> ${data.time}`;
+  
+  infoDiv.html(infoText);
 }

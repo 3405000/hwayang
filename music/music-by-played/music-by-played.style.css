@@ -12,6 +12,12 @@ body {
   text-align: center;
 }
 
+.content-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
 h1 {
   color: #2c3e50;
   margin-bottom: 30px;
@@ -21,6 +27,26 @@ h1 {
   display: flex;
   justify-content: center;
   margin: 20px 0;
+}
+
+#detail-panel {
+  width: 300px;
+  background: #fefefe;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 15px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+#detail-info {
+  margin-top: 15px;
+  line-height: 1.4;
+  text-align: left;
+  font-size: 14px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
 }
 
 #tooltip {

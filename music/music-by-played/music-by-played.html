@@ -10,7 +10,18 @@
 <body>
   <div class="container">
     <h1>음악 속성 부채꼴 시각화</h1>
-    <div id="visualization"></div>
+    
+    <div class="content-wrapper">
+      <!-- 왼쪽: 메인 시각화 -->
+      <div id="visualization"></div>
+      
+      <!-- 오른쪽: 상세 패널 -->
+      <div id="detail-panel">
+        <svg id="detail-svg" width="300" height="300"></svg>
+        <div id="detail-info"></div>
+      </div>
+    </div>
+    
     <div id="tooltip"></div>
     <div id="legend"></div>
   </div>
