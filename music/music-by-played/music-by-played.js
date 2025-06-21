@@ -1,15 +1,9 @@
-// 속성별 색상 설정
-const colorScale = d3.scaleOrdinal()
-  .domain(["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"])
-  .range(["#FF6B6B", "#FFD166", "#06D6A0", "#118AB2", "#073B4C", "#EF476F"]);
-
 // CSV 데이터 로드
 d3.csv("../music-data.csv").then(function(data) {
   // 데이터 전처리
   const processedData = data.map(d => ({
     name: d["음악명"],
     artist: d["아티스트"],
-    releaseDate: d["발매일"],
     attributes: {
       Energy: +d.Energy,
       Danceability: +d.Danceability,
@@ -35,15 +29,9 @@ function createRadialVisualization(data) {
   // 중심 원 반지름 (전체 반지름의 1/4)
   const centerRadius = radius * 0.25;
   
-  // 속성 영역의 내부 반지름 (중심 원 바깥에서 시작)
-  const innerRadius = centerRadius + 10;
+  // 속성 영역의 최대 반지름 (3/4 사용)
+  const maxAttributeRadius = radius * 0.75;
   
-  // 속성 영역의 최대 반지름
-  const outerRadius = radius - 20;
-  
-  // 속성 영역 높이 (6개 속성 균등 분할)
-  const bandHeight = (outerRadius - innerRadius) / 6;
-
   // SVG 생성
   const svg = d3.select("#visualization")
     .append("svg")
@@ -61,63 +49,67 @@ function createRadialVisualization(data) {
 
   const arcs = pie(data);
 
-  // 부채꼴 생성
+  // 속성 배열
+  const attributes = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
+
+  // 부채꼴 생성 그룹
   const sector = svg.selectAll(".sector")
     .data(arcs)
     .enter()
     .append("g")
     .attr("class", "sector");
 
-  // 속성별 부채꼴 그리기
-  const attributes = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
-  
-  attributes.forEach((attr, attrIndex) => {
-    sector.append("path")
-      .attr("class", "attribute-arc")
-      .attr("data-attribute", attr)
-      .attr("data-index", (d, i) => i)
-      .attr("d", d => {
-        const arc = d3.arc()
-          .innerRadius(innerRadius + attrIndex * bandHeight)
-          .outerRadius(innerRadius + attrIndex * bandHeight + 
-                      (d.data.attributes[attr] / 100) * bandHeight)
-          .startAngle(d.startAngle)
-          .endAngle(d.endAngle);
-        return arc(d);
-      })
-      .attr("fill", colorScale(attr))
-      .attr("opacity", 0.8)
-      .attr("stroke", "white")
-      .attr("stroke-width", 1)
-      .on("mouseover", function(event, d) {
-        // 툴팁 표시
-        const tooltip = d3.select("#tooltip");
-        tooltip.transition()
-          .duration(200)
-          .style("opacity", 0.9);
-        tooltip.html(`
-          <strong>${d.data.name}</strong><br>
-          <em>${d.data.artist} (${d.data.releaseDate})</em><br>
-          ${attr}: ${d.data.attributes[attr]}%
-        `)
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 28) + "px");
-        
-        // 현재 호 강조
-        d3.select(this)
-          .attr("opacity", 1)
-          .attr("stroke-width", 2);
-      })
-      .on("mouseout", function() {
-        // 툴팁 숨기기
-        d3.select("#tooltip")
-          .style("opacity", 0);
-        
-        // 호 스타일 복원
-        d3.select(this)
-          .attr("opacity", 0.8)
-          .attr("stroke-width", 1);
-      });
+  // 각 부채꼴에 대해 속성값 총합 계산 및 비율에 따른 반지름 분할
+  sector.each(function(d) {
+    const group = d3.select(this);
+    const totalValue = attributes.reduce((sum, attr) => sum + d.data.attributes[attr], 0);
+    let currentRadius = centerRadius;
+
+    attributes.forEach(attr => {
+      const value = d.data.attributes[attr];
+      const proportion = value / totalValue;
+      const bandLength = proportion * maxAttributeRadius;
+      
+      const arcGenerator = d3.arc()
+        .innerRadius(currentRadius)
+        .outerRadius(currentRadius + bandLength)
+        .startAngle(d.startAngle)
+        .endAngle(d.endAngle);
+      
+      group.append("path")
+        .attr("d", arcGenerator())
+        .attr("fill", colors[attr])
+        .attr("stroke", "white")
+        .attr("stroke-width", 1)
+        .attr("opacity", 0.8)
+        .on("mouseover", function(event) {
+          // 툴팁 표시
+          d3.select("#tooltip")
+            .style("opacity", 0.9)
+            .html(`
+              <strong>${d.data.name}</strong><br>
+              <em>${d.data.artist}</em><br>
+              ${attr}: ${value}%
+            `)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 28) + "px");
+          
+          // 현재 호 강조
+          d3.select(this)
+            .attr("opacity", 1)
+            .attr("stroke-width", 2);
+        })
+        .on("mouseout", function() {
+          // 툴팁 숨기기
+          d3.select("#tooltip").style("opacity", 0);
+          // 호 스타일 복원
+          d3.select(this)
+            .attr("opacity", 0.8)
+            .attr("stroke-width", 1);
+        });
+      
+      currentRadius += bandLength;
+    });
   });
 
   // 중심 원 그리기
@@ -132,9 +124,7 @@ function createRadialVisualization(data) {
   // 곡명 레이블 추가 (중심 원 위에)
   sector.append("text")
     .attr("transform", d => {
-      // 각 부채꼴의 중앙 각도 계산
       const angle = (d.startAngle + d.endAngle) / 2;
-      // 레이블 위치 계산 (중심에서 약간 안쪽)
       const labelRadius = centerRadius * 0.7;
       const x = Math.sin(angle) * labelRadius;
       const y = -Math.cos(angle) * labelRadius;
@@ -149,14 +139,13 @@ function createRadialVisualization(data) {
 
   // 범례 생성
   const legend = d3.select("#legend");
-  
   attributes.forEach(attr => {
     const legendItem = legend.append("div")
       .attr("class", "legend-item");
     
     legendItem.append("div")
       .attr("class", "legend-color")
-      .style("background-color", colorScale(attr));
+      .style("background-color", colors[attr]);
     
     legendItem.append("div")
       .attr("class", "legend-label")
