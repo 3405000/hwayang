@@ -12,10 +12,9 @@ body {
   text-align: center;
 }
 
-.content-wrapper {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
+h1 {
+  color: #2c3e50;
+  margin-bottom: 30px;
 }
 
 #year-circles {
@@ -45,6 +44,9 @@ body {
   padding: 15px;
   text-align: center;
   font-family: Arial, sans-serif;
+  position: fixed;
+  right: 20px;
+  top: 100px;
 }
 
 #detail-info {

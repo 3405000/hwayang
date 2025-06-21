@@ -21,7 +21,6 @@ d3.csv("../music-data.csv").then(function(data) {
   console.error("CSV 로드 오류:", error);
 });
 
-// 이중 원만 그리는 함수
 function drawYearCircles(data) {
   // 1. 년도별로 그룹화, 정렬
   const yearMap = d3.group(data, d => d.year);
@@ -35,7 +34,6 @@ function drawYearCircles(data) {
   const circleGap = circleRadius * 2 * (1 - overlapRatio) + 2; // +2는 미세 여유
 
   // 3. 각 년도별로 원 배치 좌표 계산 (충돌 방지)
-  //    같은 열(x좌표)에 이미 있는 원들과 겹치는지 체크
   const yearRows = [];
   years.forEach((year, rowIdx) => {
     const items = yearMap.get(year);
@@ -44,8 +42,8 @@ function drawYearCircles(data) {
       let col = 0;
       while (circles.some(c =>
         Math.abs(col - c.col) < 1 &&
-        Math.abs(rowIdx - c.row) < 2 && // 위아래 1줄 차이만 체크
-        Math.abs((col - c.col) * circleGap) < circleRadius * 2 // x축 겹침 방지
+        Math.abs(rowIdx - c.row) < 2 &&
+        Math.abs((col - c.col) * circleGap) < circleRadius * 2
       )) {
         col++;
       }
@@ -74,7 +72,7 @@ function drawYearCircles(data) {
     .attr("y", (d, i) => margin.top + i * rowHeight + rowHeight / 2)
     .text(d => d.year);
 
-  // 6. 원 그룹 그리기
+  // 6. 원 그룹 그리기 (부채꼴로)
   yearRows.forEach((yr, rowIdx) => {
     svg.selectAll(".circle-group-" + yr.year)
       .data(yr.circles)
@@ -98,12 +96,23 @@ function drawYearCircles(data) {
           .attr("r", circleRadius)
           .attr("fill", "black")
           .attr("stroke", "none");
-        // 속성별 부채꼴 (Energy 기준 색상)
-        // (여기선 단색, 상세는 부채꼴)
-        d3.select(this).append("circle")
-          .attr("r", circleRadius)
-          .attr("fill", colors.Energy)
-          .attr("opacity", 0.4);
+        // 6개 부채꼴로 속성 시각화
+        const attributes = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
+        const maxAngle = (60 * Math.PI) / 180;
+        attributes.forEach((attr, i) => {
+          const value = d.attributes[attr];
+          const startAngle = i * maxAngle;
+          const endAngle = startAngle + (value / 100) * maxAngle;
+          const arc = d3.arc()
+            .innerRadius(0)
+            .outerRadius(circleRadius)
+            .startAngle(startAngle)
+            .endAngle(endAngle);
+          d3.select(this).append('path')
+            .attr('d', arc)
+            .attr('fill', colors[attr])
+            .attr('opacity', 0.8);
+        });
         // 흰색 중심 원
         d3.select(this).append("circle")
           .attr("r", circleRadius / 3.5)
@@ -112,7 +121,7 @@ function drawYearCircles(data) {
   });
 }
 
-// 상세 패널 업데이트 함수 (질문에서 주신 코드 그대로 사용)
+// 상세 패널 업데이트 함수
 function updateDetailPanel(data) {
     const svg = d3.select('#detail-svg');
     svg.selectAll('*').remove();
