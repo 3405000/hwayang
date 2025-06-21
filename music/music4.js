@@ -26,7 +26,7 @@ d3.csv("music-data.csv").then(function (data) {
 
         return {
             index: i,
-            name: d["음악명 - 아티스트"] || d["음악명"] || "",
+            name: d["음악명"] || d["음악명"] || "",
             values: values
         };
     });

@@ -165,7 +165,7 @@ d3.csv("music-data.csv").then(function (data) {
 
         // 텍스트 정보 표시
         detailDiv.append("h3")
-            .text(track["음악명 - 아티스트"] || track["음악명"] || "정보 없음");
+            .text(track["음악명"] || track["음악명"] || "정보 없음");
 
         // 아티스트 정보가 있으면 추가
         if (track["아티스트"]) {

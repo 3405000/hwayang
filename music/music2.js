@@ -34,7 +34,7 @@ d3.csv("music-data.csv").then(function (data) {
         svg.append("text")
             .attr("x", 10)
             .attr("y", rowHeight * rowIdx + rowHeight / 2 + 5)
-            .text(d["음악명 - 아티스트"] || d["음악명"] || "")
+            .text(d["음악명"] || d["음악명"] || "")
             .attr("font-size", "12px")
             .attr("fill", "#333");
     });

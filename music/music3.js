@@ -54,7 +54,7 @@ d3.csv("music-data.csv").then(function (data) {
             .attr("font-size", "10px")
             .attr("fill", "#555")
             .attr("data-index", i)
-            .text(d["음악명 - 아티스트"] || d["음악명"] || "");
+            .text(d["음악명"] || d["음악명"] || "");
     });
 
     // 가로선 추가 (처음에는 숨김)

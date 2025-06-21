@@ -5,7 +5,7 @@ let globalData = [];
 d3.csv("music-data.csv").then(function(csvData) {
   // 데이터 파싱 및 저장
   globalData = csvData.map(d => ({
-    name: d["음악명 - 아티스트"] || d["음악명"] || "",
+    name: d["음악명"] || d["음악명"] || "",
     artist: d["아티스트"] || "",
     Energy: +d.Energy,
     Danceability: +d.Danceability,
