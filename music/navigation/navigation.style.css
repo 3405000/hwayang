@@ -68,11 +68,161 @@
     font-size: 1.3rem;
 }
 
-
 .nav-back {
     width: 40px;
     height: 40px;
     margin: 30px 0;
     cursor: pointer;
     display: block;
+}
+
+/* color-legend 스타일 (color-legend.style.css 내용도 포함) */
+:root {
+    --energy: #CD1A1A;
+    --danceability: #F26C49;
+    --happiness: #E9A751;
+    --acousticness: #854F1C;
+    --instrumentalness: #355D67;
+    --liveness: #87B6A2;
+    --text-dark: #333;
+    --text-light: #666;
+    --bg-light: #f8f9fa;
+}
+
+.color-legend {
+    margin-top: auto;
+    padding: 30px 0 0 0;
+    max-width: 500px;
+    width: 100%;
+    text-align: left;
+    padding-bottom: 100px;
+}
+
+.color-legend .attribute-title {
+    color: #222 !important;
+}
+
+.buttons-container {
+    margin: 0 10px;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.color-button {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.color-button.active {
+    box-shadow: 0 0 0 3px black, 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.button-label {
+    display: none;
+}
+
+.description-container {
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+}
+
+.attribute-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #222;
+    text-align: left;
+    letter-spacing: 0.02em;
+    margin: 0;
+}
+
+.attribute-subtitle {
+    font-size: 16px;
+    color: var(--text-light);
+    /* margin-bottom: 10px; */
+    font-weight: 500;
+}
+
+.attribute-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.default-message {
+    text-align: left;
+    font-size: 1rem;
+    color: var(--text-light);
+}
+
+.energy-bg {
+    background-color: var(--energy);
+}
+
+.danceability-bg {
+    background-color: var(--danceability);
+}
+
+.happiness-bg {
+    background-color: var(--happiness);
+}
+
+.acousticness-bg {
+    background-color: var(--acousticness);
+}
+
+.instrumentalness-bg {
+    background-color: var(--instrumentalness);
+}
+
+.liveness-bg {
+    background-color: var(--liveness);
+}
+
+@media (max-width: 768px) {
+
+    .nav-container,
+    #nav-container {
+        width: 100vw;
+        height: auto;
+        position: static;
+    }
+
+    .buttons-container {
+        gap: 15px;
+    }
+
+    .color-button {
+        width: 50px;
+        height: 50px;
+    }
+
+    .attribute-title {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .buttons-container {
+        gap: 12px;
+    }
+
+    .color-button {
+        width: 45px;
+        height: 45px;
+    }
+
+    .button-label {
+        font-size: 0.75rem;
+    }
 }
