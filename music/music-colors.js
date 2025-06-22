@@ -1,4 +1,3 @@
-// colors.js
 const colors = {
   Energy: "#CD1A1A",
   Danceability: "#F26C49",
