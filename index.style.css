@@ -1,0 +1,73 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+}
+
+.stack-container {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.image-section {
+    width: 100vw;
+}
+
+.main-image {
+    width: 100vw;
+    height: auto;
+    display: block;
+}
+
+.button-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 50px; /* 버튼 사이 간격 */
+    margin: 200px 0 400px 0; /* 위 아래 여백 */
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.15s;
+    padding: 10px;
+    margin: 10px 70px;
+}
+
+.nav-item img {
+    height: 150px;
+    width: auto;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.nav-item span {
+    font-size: 30px;
+    font-weight: bold;
+    color: #222; /* 기본 텍스트 색상 */
+    letter-spacing: 1px;
+    padding: 10px;
+}
+
+/* 음악, 책, 쪽지별 색상 지정 */
+.nav-item.music span {
+    color: #854F1C;
+}
+.nav-item.book span {
+    color: #854F1C;
+}
+.nav-item.memo span {
+    color: #854F1C;
+}
+
+/* 마우스 오버시 살짝 확대 효과 */
+.nav-item:hover {
+    transform: scale(1.06);
+}

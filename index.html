@@ -4,28 +4,30 @@
 <head>
     <meta charset="UTF-8" />
     <title>index</title>
+    <link rel="stylesheet" href="index.style.css" />
 </head>
 
-<body style="display: flex;">
-    <div class="nav-top" onclick="location.href='/music/music-overview/music-overview.html'">화양연화</div>
-  <div class="nav-items">
-    <a href="./music/music-overview/music-overview.html" class="nav-item" id="nav-overview">
-      <span class="nav-icon">📊</span> 개요
-    </a>
-    <a href="./music/music-by-played/music-by-played.html" class="nav-item" id="nav-time">
-      <span class="nav-icon">⏱️</span> 시간
-    </a>
-    <a href="./music/music-by-published/music-by-published.html" class="nav-item" id="nav-published">
-      <span class="nav-icon">📅</span> 발매일
-    </a>
-    <a href="./music/music-by-character/music-by-character.html" class="nav-item" id="nav-character">
-      <span class="nav-icon">😊</span> 정서
-    </a>
-    <a href="./music/music-by-artist/music-by-artist.html" class="nav-item" id="nav-artist">
-      <span class="nav-icon">🎵</span> 음악가
-    </a>
+<body>
+    <div class="stack-container">
+        <div class="image-section">
+            <img src="overview.svg" class="main-image" alt="설명" />
+        </div>
+        <div class="button-section">
+            <a href="./music/music-overview/music-overview.html" class="nav-item music">
+                <img src="music-icon.svg" alt="뮤직 아이콘" />
+                <span>음악</span>
+            </a>
+            <a href="./book/" class="nav-item book">
+                <img src="book-icon.svg" alt="책 아이콘" />
+                <span>책</span>
+            </a>
+            <a href="./memo/" class="nav-item memo">
+                <img src="memo-icon.svg" alt="쪽지 아이콘" />
+                <span>쪽지</span>
+            </a>
+        </div>
+    </div>
+    <script src="index.js"></script>
 </body>
 
 </html>
-
-
