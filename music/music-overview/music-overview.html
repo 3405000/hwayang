@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>overview</title>
+  <link rel="stylesheet" href="music-overview.style.css">
+  <link rel="stylesheet" href="/music/navigation/navigation.style.css">
+  <link rel="stylesheet" href="/music/color-legend/color-legend.style.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div id="nav-container"></div>
+  <div class="container">
+    <h1>overview</h1>
+    <div class="content-wrapper">
+      <section class="data-collection">
+        <h2>데이터 수집</h2>
+        <p>
+          Shazam 음악 검색 서비스를 활용해 화양연화 카페에서 시간대별로 재생된 음악 리스트를 수집했습니다.
+          <br>
+          다양한 시간대(아침, 점심, 저녁, 밤)에 걸쳐 음악을 기록하여 시간대별 음악 선호도 패턴을 분석할 수 있는 데이터를 구축했습니다.
+        </p>
+      </section>
+      <section class="data-classification">
+        <h2>데이터 분류</h2>
+        <p>
+          Spotify AI 음악 분석 모델 기반 서비스 Tunebat을 활용해 각 음악의 정서를 객관화된 수치 값으로 분류했습니다.
+          <br>
+          <strong>분석 항목:</strong> Key Camelot, BPM, Duration, Popularity, Energy, Danceability, Happiness, Acousticness, Instrumentalness, Liveness, Speechiness, Loudness
+        </p>
+      </section>
+      <section class="data-analysis">
+        <h2>데이터 분석</h2>
+        <p>
+          6가지 정서 항목에 상징적인 색상을 부여하고, 음악의 발매일, 정서, 작곡가, 재생 시각을 기준으로 음악을 정렬 및 분석했습니다.
+          <br>
+          다양한 시각화 기법을 활용해 시간대별 음악 선호도 패턴과 정서적 특성을 시각적으로 표현했습니다.
+        </p>
+      </section>
+      <div class="color-legend">
+    <h1 class="legend-title">음악 속성 색상 범례</h1>
+    <div class="buttons-container"></div>
+    <div class="description-container">
+      <p class="default-message">색상 버튼에 마우스를 올려 속성 설명을 확인하세요</p>
+    </div>
+  </div>
+    </div>
+    <div id="tooltip"></div>
+    <div id="legend"></div>
+  </div>
+  <script src="/music/color-legend/color-legend.js"></script>
+  <script src="/music/navigation/navigation.js"></script>
+  <script src="../music-colors.js"></script>
+</body>
+</html>

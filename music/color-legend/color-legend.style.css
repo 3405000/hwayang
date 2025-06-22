@@ -1,0 +1,165 @@
+:root {
+  --energy: #CD1A1A;
+  --danceability: #F26C49;
+  --happiness: #E9A751;
+  --acousticness: #854F1C;
+  --instrumentalness: #355D67;
+  --liveness: #87B6A2;
+  --text-dark: #333;
+  --text-light: #666;
+  --bg-light: #f8f9fa;
+  --transition: all 0.3s ease;
+}
+
+.color-legend {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  max-width: 900px;
+  width: 100%;
+}
+
+.legend-title {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.legend-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, var(--energy), var(--liveness));
+  border-radius: 2px;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 40px;
+}
+
+.color-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.color-button:hover {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.color-button.active {
+  box-shadow: 0 0 0 3px black, 0 8px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px) scale(1.1);
+}
+
+.button-label {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  white-space: nowrap;
+}
+
+.description-container {
+  background: var(--bg-light);
+  border-radius: 12px;
+  padding: 30px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: var(--transition);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.attribute-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(to right, var(--energy), var(--liveness));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.attribute-subtitle {
+  font-size: 1.3rem;
+  color: var(--text-light);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.attribute-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-dark);
+}
+
+.default-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Color classes */
+.energy-bg { background-color: var(--energy); }
+.danceability-bg { background-color: var(--danceability); }
+.happiness-bg { background-color: var(--happiness); }
+.acousticness-bg { background-color: var(--acousticness); }
+.instrumentalness-bg { background-color: var(--instrumentalness); }
+.liveness-bg { background-color: var(--liveness); }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .buttons-container {
+    gap: 15px;
+  }
+  
+  .color-button {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .legend-title {
+    font-size: 1.8rem;
+  }
+  
+  .attribute-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .buttons-container {
+    gap: 12px;
+  }
+  
+  .color-button {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .button-label {
+    font-size: 0.75rem;
+  }
+}
