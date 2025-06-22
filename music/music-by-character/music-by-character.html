@@ -4,12 +4,16 @@
   <meta charset="UTF-8">
   <title>평가 항목별 시각화</title>
   <link rel="stylesheet" href="music-by-character.style.css">
+  <link rel="stylesheet" href="/music/navigation/navigation.style.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
+  <div id="nav-container"></div>
   <div class="container">
     <h2>음악 데이터 시각화</h2>
     <div class="section">
+      <div id="circle-container"></div>
+      <div id="tooltip" class="tooltip"></div>
       <div id="buttons">
         <button onclick="showCircles('Energy')" class="active">Energy</button>
         <button onclick="showCircles('Danceability')">Danceability</button>
@@ -18,10 +22,9 @@
         <button onclick="showCircles('Instrumentalness')">Instrumentalness</button>
         <button onclick="showCircles('Liveness')">Liveness</button>
       </div>
-      <div id="circle-container"></div>
-      <div id="tooltip" class="tooltip"></div>
     </div>
   </div>
+  <script src="/music/navigation/navigation.js"></script>
   <script src="../../shared/colors.js"></script>
   <script src="music-by-character.js"></script>
 </body>
