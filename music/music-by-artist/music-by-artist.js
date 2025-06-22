@@ -16,7 +16,7 @@ d3.csv("../music-data.csv").then(function(csvData) {
     return Array.from(set);
   }
 
-  // 반원 그리기용 arc path 생성 (좌/우)
+  // 반원 그리기용 arc path 생성 (좌/우, 90도 회전 적용)
   function describeArc(x, y, r, startAngle, endAngle) {
     const start = polarToCartesian(x, y, r, endAngle);
     const end = polarToCartesian(x, y, r, startAngle);
@@ -35,19 +35,6 @@ d3.csv("../music-data.csv").then(function(csvData) {
       x: cx + (r * Math.cos(angleInRadians)),
       y: cy + (r * Math.sin(angleInRadians))
     };
-  }
-
-  // 툴팁 표시 함수
-  function showTooltip(html, x, y) {
-    const tooltip = document.getElementById('tooltip');
-    tooltip.innerHTML = html;
-    tooltip.style.display = 'block';
-    tooltip.style.left = (x + 18) + 'px';
-    tooltip.style.top = (y - 18) + 'px';
-  }
-
-  function hideTooltip() {
-    document.getElementById('tooltip').style.display = 'none';
   }
 
   // 원 시각화 그리기 함수
@@ -69,7 +56,11 @@ d3.csv("../music-data.csv").then(function(csvData) {
       const y = Math.floor(i / circlesPerRow) * (circleSize + 18) + circleSize/2 + 2;
 
       const artistArr = d["아티스트"].split(",").map(a => a.trim());
-      const isActive = selectedArtist && artistArr.includes(selectedArtist);
+      
+      // 전체 선택 시 모든 원을 색상으로 표시
+      const isActive = selectedArtist ? 
+        artistArr.includes(selectedArtist) : 
+        true;
 
       const values = visualFields.map(f => ({ 
         key: f, 
@@ -81,35 +72,18 @@ d3.csv("../music-data.csv").then(function(csvData) {
 
       const g = svg.append("g")
         .attr("class", "music-circle")
-        .attr("transform", `translate(${x},${y})`)
-        .style("cursor", "pointer")
-        .on("mouseover", (event) => {
-          showTooltip(
-            `<b>${d["음악명"]}</b><br/>${d["아티스트"]}<br/>
-            <span style="font-size:13px;">
-              Energy: ${d["Energy"]} / Danceability: ${d["Danceability"]}<br/>
-              Happiness: ${d["Happiness"]} / Acousticness: ${d["Acousticness"]}<br/>
-              Instrumentalness: ${d["Instrumentalness"]} / Liveness: ${d["Liveness"]}
-            </span>`,
-            event.pageX, event.pageY
-          );
-        })
-        .on("mouseout", hideTooltip);
+        .attr("transform", `translate(${x},${y})`);
 
       if (isActive) {
-        // 왼쪽 반원 (상위 1순위 값)
+        // 왼쪽 반원 (상위 1순위 값) - 90도 회전 적용
         g.append("path")
-          .attr("d", describeArc(0, 0, circleSize/2, 90, 270))
-          .attr("fill", colors[first.key])
-          .attr("stroke", "#fff")
-          .attr("stroke-width", 1.5);
+          .attr("d", describeArc(0, 0, circleSize/2, 0, 180))
+          .attr("fill", colors[first.key]);
 
-        // 오른쪽 반원 (상위 2순위 값)
+        // 오른쪽 반원 (상위 2순위 값) - 90도 회전 적용
         g.append("path")
-          .attr("d", describeArc(0, 0, circleSize/2, 270, 450))
-          .attr("fill", colors[second.key])
-          .attr("stroke", "#fff")
-          .attr("stroke-width", 1.5);
+          .attr("d", describeArc(0, 0, circleSize/2, 180, 360))
+          .attr("fill", colors[second.key]);
       } else {
         // 회색 원 (비활성 상태)
         g.append("circle")
@@ -128,7 +102,7 @@ d3.csv("../music-data.csv").then(function(csvData) {
     // 전체 버튼
     btnContainer.append("button")
       .attr("class", `artist-btn ${!selectedArtist ? "selected" : ""}`)
-      .text("전체")
+      .text("전체 보기")
       .on("click", () => {
         drawCircles(null);
         drawButtons(artistList, null);

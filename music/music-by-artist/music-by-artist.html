@@ -8,11 +8,16 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
+  <div id="nav-container"></div>
+  <h2>음악가에 따른 음악</h2>
   <div class="container">
-    <h2>아티스트별 음악 데이터 시각화</h2>
-    <div id="circle-container"></div>
-    <div id="buttons"></div>
-    <div id="tooltip" class="tooltip"></div>
+    <div class="content-wrapper">
+      <div id="circle-container"></div>
+      <div id="artist-panel">
+        <h3>아티스트 목록</h3>
+        <div id="buttons"></div>
+      </div>
+    </div>
   </div>
   <script src="/music/navigation/navigation.js"></script>
   <script src="../music-colors.js"></script>
