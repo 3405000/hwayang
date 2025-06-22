@@ -1,24 +1,27 @@
-// CSV 데이터 로드
-d3.csv("../music-data.csv").then(function(data) {
-  // 데이터 전처리
-  const processedData = data.map(d => ({
-    name: d["음악명"],
-    artist: d["아티스트"],
-    year: +d["발매일"],
-    time: `${d["날짜"]} ${d["시간"]}`,
-    attributes: {
-      Energy: +d.Energy,
-      Danceability: +d.Danceability,
-      Happiness: +d.Happiness,
-      Acousticness: +d.Acousticness,
-      Instrumentalness: +d.Instrumentalness,
-      Liveness: +d.Liveness
-    }
-  }));
+// 상세 패널 로드 및 초기화
+loadDetailPanel().then(() => {
+  // CSV 데이터 로드
+  d3.csv("../music-data.csv").then(function(data) {
+    // 데이터 전처리
+    const processedData = data.map(d => ({
+      name: d["음악명"],
+      artist: d["아티스트"],
+      year: +d["발매일"],
+      time: `${d["날짜"]} ${d["시간"]}`,
+      attributes: {
+        Energy: +d.Energy,
+        Danceability: +d.Danceability,
+        Happiness: +d.Happiness,
+        Acousticness: +d.Acousticness,
+        Instrumentalness: +d.Instrumentalness,
+        Liveness: +d.Liveness
+      }
+    }));
 
-  drawYearCircles(processedData);
-}).catch(function(error) {
-  console.error("CSV 로드 오류:", error);
+    drawYearCircles(processedData);
+  }).catch(function(error) {
+    console.error("CSV 로드 오류:", error);
+  });
 });
 
 function drawYearCircles(data) {
@@ -107,7 +110,8 @@ function drawYearCircles(data) {
           `translate(${margin.left + d.x + circleRadius},${margin.top + yr.row * rowHeight + rowHeight / 2})`
         )
         .on("mouseover", function(event, d) {
-          updateDetailPanel(d);
+          // hover 시 상세 패널 업데이트
+          updateDetailPanel(d, colors);
           d3.select(this).raise().select("circle.outer").attr("stroke", "#333").attr("stroke-width", 2);
         })
         .on("mouseout", function() {
@@ -149,71 +153,4 @@ function drawYearCircles(data) {
         });
     }
   });
-}
-
-// 상세 패널 업데이트 함수
-function updateDetailPanel(data) {
-  const svg = d3.select('#detail-svg');
-  svg.selectAll('*').remove();
-
-  const width = +svg.attr('width');
-  const height = +svg.attr('height');
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const radius = Math.min(width, height) / 2;
-
-  // 블러 필터 추가 (상세 패널 전용)
-  const defs = svg.append("defs");
-  const blurFilter = defs.append("filter")
-    .attr("id", "detail-blur")
-    .attr("x", "-50%")
-    .attr("y", "-50%")
-    .attr("width", "200%")
-    .attr("height", "200%");
-  blurFilter.append("feGaussianBlur")
-    .attr("in", "SourceGraphic")
-    .attr("stdDeviation", "5");
-
-  svg.append('circle')
-    .attr('cx', centerX)
-    .attr('cy', centerY)
-    .attr('r', radius)
-    .attr('fill', 'black');
-
-  const attributes = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
-  const maxAngle = (60 * Math.PI) / 180;
-
-  attributes.forEach((attr, i) => {
-    const value = data.attributes[attr];
-    const startAngle = i * maxAngle;
-    const endAngle = startAngle + (value / 100) * maxAngle;
-    const arc = d3.arc()
-      .innerRadius(0)
-      .outerRadius(radius)
-      .startAngle(startAngle)
-      .endAngle(endAngle);
-
-    svg.append('path')
-      .attr('d', arc)
-      .attr('transform', `translate(${centerX},${centerY})`)
-      .attr('fill', colors[attr])
-      .attr('filter', "url(#detail-blur)")
-      .attr('opacity', 0.9);
-  });
-
-  svg.append('circle')
-    .attr('cx', centerX)
-    .attr('cy', centerY)
-    .attr('r', radius / 4)
-    .attr('fill', 'white');
-
-  const infoDiv = d3.select('#detail-info');
-  let infoText = `<strong>${data.name}</strong><br>`;
-  infoText += `<em>${data.artist}</em><br><br>`;
-  attributes.forEach(attr => {
-    infoText += `<strong>${attr}:</strong> ${data.attributes[attr]}<br>`;
-  });
-  infoText += `<br><strong>발매년도:</strong> ${data.year}<br>`;
-  infoText += `<strong>시간:</strong> ${data.time}`;
-  infoDiv.html(infoText);
 }

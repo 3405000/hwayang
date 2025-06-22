@@ -1,27 +1,33 @@
 // 전역 데이터 저장소
 let globalData = [];
 
-// CSV 데이터 로드
-d3.csv("../music-data.csv").then(function(csvData) {
-  // 데이터 파싱 및 저장
-  globalData = csvData.map(d => ({
-    name: d["음악명"] || d["음악명"] || "",
-    artist: d["아티스트"] || "",
-    Energy: +d.Energy,
-    Danceability: +d.Danceability,
-    Happiness: +d.Happiness,
-    Acousticness: +d.Acousticness,
-    Instrumentalness: +d.Instrumentalness,
-    Liveness: +d.Liveness
-  }));
+// 상세 패널 로드 및 초기화
+loadDetailPanel().then(() => {
+  // CSV 데이터 로드
+  d3.csv("../music-data.csv").then(function(csvData) {
+    // 데이터 파싱 및 저장
+    globalData = csvData.map(d => ({
+      name: d["음악명"] || d["음악명"] || "",
+      artist: d["아티스트"] || "",
+      time: `${d["날짜"]} ${d["시간"]}`,
+      attributes: {
+        Energy: +d.Energy,
+        Danceability: +d.Danceability,
+        Happiness: +d.Happiness,
+        Acousticness: +d.Acousticness,
+        Instrumentalness: +d.Instrumentalness,
+        Liveness: +d.Liveness
+      }
+    }));
 
-  // 첫 번째 시각화 초기화
-  showCircles('Energy');
+    // 첫 번째 시각화 초기화
+    showCircles('Energy');
 
-  // 두 번째 시각화 생성
-  drawAreaChart();
-}).catch(function(error) {
-  console.error("CSV 로드 오류:", error);
+    // 두 번째 시각화 생성
+    drawAreaChart();
+  }).catch(function(error) {
+    console.error("CSV 로드 오류:", error);
+  });
 });
 
 // 원형 차트 표시 함수
@@ -31,8 +37,6 @@ function showCircles(attribute) {
   // 버튼 active 처리
   document.querySelectorAll('#buttons button').forEach(btn => {
     btn.classList.remove('active');
-  });
-  document.querySelectorAll('#buttons button').forEach(btn => {
     if (btn.textContent === attribute) btn.classList.add('active');
   });
 
@@ -42,12 +46,12 @@ function showCircles(attribute) {
   const centerY = container.clientHeight / 2;
 
   // 값의 최대값 기준으로 크기 보정
-  const maxValue = Math.max(...globalData.map(d => d[attribute]));
+  const maxValue = Math.max(...globalData.map(d => d.attributes[attribute]));
   const minSize = 0, maxSize = 50;
 
   // 노드 데이터 생성
   const nodes = globalData.map((d, i) => {
-    const value = d[attribute];
+    const value = d.attributes[attribute];
     const size = minSize + (value / maxValue) * (maxSize - minSize);
     return {
       id: i,
@@ -73,10 +77,12 @@ function showCircles(attribute) {
       circle
         .attr('data-name', d.data.name)
         .attr('data-artist', d.data.artist)
-        .attr('data-value', d.data[attribute]);
+        .attr('data-value', d.data.attributes[attribute]);
+    })
+    .on("click", function(event, d) {
+      // 클릭 시 상세 패널 업데이트
+      updateDetailPanel(d.data, colors);
     });
-
-  // 툴팁 이벤트 연결 (기존 이벤트 핸들러 유지)
 
   // 충돌 방지 시뮬레이션
   const simulation = d3.forceSimulation(nodes)
@@ -92,7 +98,6 @@ function showCircles(attribute) {
       });
     });
 }
-
 
 // 영역 차트 생성 함수
 function drawAreaChart() {
@@ -118,7 +123,7 @@ function drawAreaChart() {
   const rowData = globalData.map((d, i) => {
     const values = keys.map(k => ({
       key: k,
-      value: d[k],
+      value: d.attributes[k],
       originalIndex: i
     }));
 
@@ -126,6 +131,7 @@ function drawAreaChart() {
     return {
       index: i,
       name: d.name,
+      data: d, // 전체 데이터 참조 추가
       values: values
     };
   });
@@ -216,60 +222,67 @@ function drawAreaChart() {
     .attr("class", "hover-circles")
     .attr("opacity", 0);
 
+  // 상세 패널 업데이트를 위한 핸들러
+  const detailPanelHandler = function(event) {
+    const [_, mouseY] = d3.pointer(event);
+    let idx = Math.floor((mouseY - paddingTop + heightPerValue / 2) / heightPerValue);
+    if (idx < 0) idx = 0;
+    if (idx >= globalData.length) idx = globalData.length - 1;
+
+    const yPos = paddingTop + idx * heightPerValue + 5;
+
+    hoverLine
+      .attr("y1", yPos)
+      .attr("y2", yPos)
+      .attr("opacity", 1);
+
+    labelsGroup.selectAll("text")
+      .attr("font-weight", "normal")
+      .attr("fill", "#555");
+
+    labelsGroup.selectAll("text")
+      .filter(function() {
+        return +d3.select(this).attr("data-index") === idx;
+      })
+      .attr("font-weight", "bold")
+      .attr("fill", "#000");
+
+    // 1) hoverCirclesGroup 초기화
+    hoverCirclesGroup.selectAll("circle").remove();
+
+    // 2) 해당 행의 값 가져오기
+    const hoveredRow = rowData[idx];
+
+    // 3) 각 항목별 원 그리기
+    hoveredRow.values.forEach((d, colIdx) => {
+      const radius = (maxWidth * (d.value / 100)) / 2;
+      const cx = paddingSides + colIdx * colSpacing;
+      const cy = yPos;
+
+      hoverCirclesGroup.append("circle")
+        .attr("cx", cx)
+        .attr("cy", cy)
+        .attr("r", radius)
+        .attr("fill", colors[d.key])
+        .attr("opacity", 0.5);
+    });
+
+    // 4) 원 그룹 보이기
+    hoverCirclesGroup.attr("opacity", 1);
+    
+    // 5) 상세 패널 업데이트
+    updateDetailPanel(hoveredRow.data, colors);
+  };
+
   svg.append("rect")
     .attr("x", 0)
     .attr("y", paddingTop)
     .attr("width", width)
     .attr("height", height - paddingTop)
     .attr("fill", "transparent")
-    .on("mousemove", function (event) {
-      const [_, mouseY] = d3.pointer(event);
-      let idx = Math.floor((mouseY - paddingTop + heightPerValue / 2) / heightPerValue);
-      if (idx < 0) idx = 0;
-      if (idx >= globalData.length) idx = globalData.length - 1;
-
-      const yPos = paddingTop + idx * heightPerValue + 5;
-
-      hoverLine
-        .attr("y1", yPos)
-        .attr("y2", yPos)
-        .attr("opacity", 1);
-
-      labelsGroup.selectAll("text")
-        .attr("font-weight", "normal")
-        .attr("fill", "#555");
-
-      labelsGroup.selectAll("text")
-        .filter(function () {
-          return +d3.select(this).attr("data-index") === idx;
-        })
-        .attr("font-weight", "bold")
-        .attr("fill", "#000");
-
-      // 1) hoverCirclesGroup 초기화
-      hoverCirclesGroup.selectAll("circle").remove();
-
-      // 2) 해당 행의 값 가져오기
-      const hoveredRow = rowData[idx];
-
-      // 3) 각 항목별 원 그리기
-      hoveredRow.values.forEach((d, colIdx) => {
-        const radius = (maxWidth * (d.value / 100)) / 2;
-        const cx = paddingSides + colIdx * colSpacing;
-        const cy = yPos;
-
-        hoverCirclesGroup.append("circle")
-          .attr("cx", cx)
-          .attr("cy", cy)
-          .attr("r", radius)
-          .attr("fill", colors[d.key])
-          .attr("opacity", 0.5);
-      });
-
-      // 4) 원 그룹 보이기
-      hoverCirclesGroup.attr("opacity", 1);
-    })
-    .on("mouseout", function () {
+    .on("mousemove", detailPanelHandler)
+    .on("click", detailPanelHandler) // 클릭 이벤트 추가
+    .on("mouseout", function() {
       hoverLine.attr("opacity", 0);
       labelsGroup.selectAll("text")
         .attr("font-weight", "normal")

@@ -6,6 +6,7 @@
   <title>음악 데이터 부채꼴 시각화</title>
   <link rel="stylesheet" href="music-by-played.style.css">
   <link rel="stylesheet" href="/music/navigation/navigation.style.css">
+  <link rel="stylesheet" href="/music/detail-panel/detail-panel.style.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
@@ -18,9 +19,7 @@
       <div id="visualization"></div>
       
       <!-- 오른쪽: 상세 패널 -->
-      <div id="detail-panel">
-        <svg id="detail-svg" width="300" height="300"></svg>
-        <div id="detail-info"></div>
+       <div id="detail-container"></div>
       </div>
     </div>
     
@@ -28,6 +27,7 @@
     <div id="legend"></div>
   </div>
   <script src="/music/navigation/navigation.js"></script>
+  <script src="/music/detail-panel/detail-panel.js"></script>
   <script src="../music-colors.js"></script>
   <script src="music-by-played.js"></script>
 </body>
