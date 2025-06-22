@@ -182,9 +182,9 @@ loadDetailPanel().then(() => {
 
         // 각도와 라벨 정의 (라디안 단위)
         const angleLabels = [
-            { angle: (-90 * Math.PI) / 180, label: '아침' },                 // 0도 (3시)
-            { angle: (30 * Math.PI) / 180, label: '낮' }, // 120도
-            { angle: (150 * Math.PI) / 180, label: '저녁' } // 240도
+            { angle: (-90 * Math.PI) / 180, label: '아침 →' },                 // 0도 (3시)
+            { angle: (30 * Math.PI) / 180, label: '↙ 낮' }, // 120도
+            { angle: (150 * Math.PI) / 180, label: '저녁 ↖ ' } // 240도
         ];
 
         // 각 위치에 텍스트 추가
