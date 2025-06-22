@@ -8,103 +8,66 @@
   --text-dark: #333;
   --text-light: #666;
   --bg-light: #f8f9fa;
-  --transition: all 0.3s ease;
 }
 
 .color-legend {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   padding: 30px;
-  max-width: 900px;
+  max-width: 500px;
   width: 100%;
+  text-align: left; /* 왼쪽 정렬 */
 }
 
-.legend-title {
-  text-align: center;
-  font-size: 2.2rem;
-  color: #2c3e50;
-  margin-bottom: 30px;
-  position: relative;
+.color-legend .attribute-title {
+  color: #222 !important;
 }
 
-.legend-title::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(to right, var(--energy), var(--liveness));
-  border-radius: 2px;
-}
 
 .buttons-container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start; /* 왼쪽 정렬 */
   flex-wrap: wrap;
   gap: 18px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .color-button {
-  width: 60px;
-  height: 60px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  transition: var(--transition);
   position: relative;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.color-button:hover {
-  transform: translateY(-5px) scale(1.1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .color-button.active {
   box-shadow: 0 0 0 3px black, 0 8px 20px rgba(0, 0, 0, 0.15);
-  transform: translateY(-5px) scale(1.1);
 }
 
 .button-label {
-  position: absolute;
-  bottom: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-dark);
-  white-space: nowrap;
+  display: none; /* 이름 숨기기 */
 }
 
 .description-container {
-  background: var(--bg-light);
-  border-radius: 12px;
-  padding: 30px;
-  min-height: 180px;
+  padding: 10px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transition: var(--transition);
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+  text-align: left; /* 왼쪽 정렬 */
 }
 
 .attribute-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-  background: linear-gradient(to right, var(--energy), var(--liveness));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #222;
+  text-align: left;
+  letter-spacing: 0.02em;
 }
 
+
 .attribute-subtitle {
-  font-size: 1.3rem;
+  font-size: 18px;
   color: var(--text-light);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-weight: 500;
 }
 
@@ -115,10 +78,9 @@
 }
 
 .default-message {
-  text-align: center;
-  font-size: 1.2rem;
+  text-align: left;
+  font-size: 18rem;
   color: var(--text-light);
-  font-style: italic;
 }
 
 /* Color classes */
@@ -140,12 +102,8 @@
     height: 50px;
   }
   
-  .legend-title {
-    font-size: 1.8rem;
-  }
-  
   .attribute-title {
-    font-size: 1.5rem;
+    font-size: 20px;
   }
 }
 

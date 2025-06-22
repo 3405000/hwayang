@@ -1,25 +1,25 @@
+body {
+    background-color: #fffffb;
+}
 .content-wrapper {
   display: flex;
   flex-direction: column;
   gap: 24px;
   margin-top: 40px;
+  margin-left: 400px;
 }
 
 .content-wrapper section {
-  background-color: #fff;
+  /* background-color: #fff; */
   padding: 28px 24px;
   border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  transition: box-shadow 0.2s;
-}
-
-.content-wrapper section:hover {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+  /* box-shadow: 0 2px 10px rgba(0,0,0,0.08); */
+  /* transition: box-shadow 0.2s; */
 }
 
 .content-wrapper h2 {
   margin-top: 0;
-  color: #2575fc;
+  color: #854F1C;
   font-size: 1.45rem;
   margin-bottom: 14px;
 }
