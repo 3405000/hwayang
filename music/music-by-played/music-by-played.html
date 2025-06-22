@@ -1,34 +1,31 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>음악 데이터 부채꼴 시각화</title>
-  <link rel="stylesheet" href="music-by-played.style.css">
-  <link rel="stylesheet" href="/music/navigation/navigation.style.css">
-  <link rel="stylesheet" href="/music/detail-panel/detail-panel.style.css">
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>음악 데이터 부채꼴 시각화</title>
+    <link rel="stylesheet" href="music-by-played.style.css">
+    <link rel="stylesheet" href="/music/navigation/navigation.style.css">
+    <link rel="stylesheet" href="/music/detail-panel/detail-panel.style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
+
 <body>
     <div id="nav-container"></div>
-  <div class="container">
-    <h1>음악 속성 부채꼴 시각화</h1>
-    
-    <div class="content-wrapper">
-      <!-- 왼쪽: 메인 시각화 -->
-      <div id="visualization"></div>
-      
-      <!-- 오른쪽: 상세 패널 -->
-       <div id="detail-container"></div>
-      </div>
+    <div class="container">
+        <h1>음악 속성 부채꼴 시각화</h1>
+        <div class="content-wrapper">
+            <div id="visualization"></div>
+            <div id="detail-container"></div>
+        </div>
     </div>
-    
-    <div id="tooltip"></div>
     <div id="legend"></div>
-  </div>
-  <script src="/music/navigation/navigation.js"></script>
-  <script src="/music/detail-panel/detail-panel.js"></script>
-  <script src="../music-colors.js"></script>
-  <script src="music-by-played.js"></script>
+    </div>
+    <script src="/music/navigation/navigation.js"></script>
+    <script src="/music/detail-panel/detail-panel.js"></script>
+    <script src="../music-colors.js"></script>
+    <script src="music-by-played.js"></script>
 </body>
+
 </html>

@@ -68,11 +68,6 @@
     font-size: 1.3rem;
 }
 
-/* 본문(컨텐츠) 영역 여백 */
-.container,
-.content-wrapper {
-    margin-left: 220px;
-}
 
 .nav-back {
     width: 40px;

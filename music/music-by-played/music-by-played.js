@@ -2,10 +2,12 @@ loadDetailPanel().then(() => {
   // CSV 데이터 로드
   d3.csv("../music-data.csv").then(function (data) {
       // 데이터 전처리
-      const processedData = data.map(d => ({
+      const processedData = data.map((d, i) => ({
           name: d["음악명"],
           artist: d["아티스트"],
           time: `${d["날짜"]} ${d["시간"]}`,
+          index: i + 1, // 1-based index
+          total: data.length,
           attributes: {
               Energy: +d.Energy,
               Danceability: +d.Danceability,
@@ -15,13 +17,13 @@ loadDetailPanel().then(() => {
               Liveness: +d.Liveness
           }
       }));
-  
+
       // 시각화 생성
       createRadialVisualization(processedData);
   }).catch(function (error) {
       console.error("CSV 로드 오류:", error);
   });
-  
+
   // 부채꼴 시각화 생성 함수
   function createRadialVisualization(data) {
       const width = 800;
@@ -29,43 +31,54 @@ loadDetailPanel().then(() => {
       const radius = Math.min(width, height) / 2;
       const centerRadius = radius * 0.25;
       const maxAttributeRadius = radius * 0.75;
-  
+
       const svg = d3.select("#visualization")
           .append("svg")
           .attr("width", width)
           .attr("height", height)
           .append("g")
           .attr("transform", `translate(${width / 2},${height / 2})`);
-  
+
       const pie = d3.pie()
           .value(1)
           .sort(null)
           .startAngle(-Math.PI / 2)
           .endAngle(Math.PI * 1.5);
-  
+
       const arcs = pie(data);
-  
+
       const attributes = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
-  
+
       const sector = svg.selectAll(".sector")
           .data(arcs)
           .enter()
           .append("g")
           .attr("class", "sector")
           .on("mouseover", function (event, d) {
-              // 데이터 복제하여 전달 (참조 문제 방지)
-              const dataCopy = JSON.parse(JSON.stringify(d.data));
-              updateDetailPanel(dataCopy, colors);
+              // hover 시 해당 음악의 모든 색상 부채꼴 진하게 표시
+              updateDetailPanel(d.data, colors);
+              d3.select(this).selectAll("path")
+                .attr("opacity", 1);
+
+              // 가운데 텍스트 n/m 업데이트
+              svg.select(".center-text-index")
+                .text(`${d.data.index} / ${d.data.total}`);
           })
           .on("mouseout", function () {
-              d3.select("#tooltip").style("opacity", 0);
+              // 툴팁 관련 코드 제거
+              d3.select(this).selectAll("path")
+                .attr("opacity", 0.8);
+
+              // 마우스 아웃 시 n/m을 비우거나 기본값으로
+              svg.select(".center-text-index")
+                .text("");
           });
-  
+
       sector.each(function (d) {
           const group = d3.select(this);
           const totalValue = attributes.reduce((sum, attr) => sum + d.data.attributes[attr], 0);
           let currentRadius = centerRadius;
-  
+
           attributes.forEach(attr => {
               const value = d.data.attributes[attr];
               const proportion = value / totalValue;
@@ -75,21 +88,13 @@ loadDetailPanel().then(() => {
                   .outerRadius(currentRadius + bandLength)
                   .startAngle(d.startAngle)
                   .endAngle(d.endAngle);
-  
+
               group.append("path")
                   .attr("d", arcGenerator())
                   .attr("fill", colors[attr])
                   .attr("opacity", 0.8)
                   .on("mouseover", function (event) {
-                      d3.select("#tooltip")
-                          .style("opacity", 0.9)
-                          .html(`
-                <strong>${d.data.name}</strong><br>
-                <em>${d.data.artist}</em><br>
-                ${attr}: ${value}%
-              `)
-                          .style("left", (event.pageX + 10) + "px")
-                          .style("top", (event.pageY - 28) + "px");
+                      // 툴팁 관련 코드 제거
                       d3.select(this)
                           .attr("opacity", 1);
                   })
@@ -97,19 +102,52 @@ loadDetailPanel().then(() => {
                       d3.select(this)
                           .attr("opacity", 0.8);
                   });
-  
+
               currentRadius += bandLength;
           });
       });
-  
+
+      // 중앙 흰색 원
       svg.append("circle")
           .attr("cx", 0)
           .attr("cy", 0)
           .attr("r", centerRadius)
-          .attr("fill", "white")
+          .attr("fill", "#fffffb")
           .attr("stroke", "#333")
           .attr("stroke-width", 2);
-  
+
+      // 가운데 텍스트 그룹 (한 번만 추가)
+      const centerTextGroup = svg.append("g")
+        .attr("class", "center-text-group")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle");
+
+      // 花樣年華
+      centerTextGroup.append("text")
+        .attr("class", "center-text-main")
+        .attr("y", -5)
+        .attr("font-size", "36px")
+        .attr("font-weight", "bold") 
+        .attr("fill", "#854F1C")
+        .text("花樣年華");
+
+      // track list
+      centerTextGroup.append("text")
+        .attr("class", "center-text-sub")
+        .attr("y", 20)
+        .attr("font-size", "20px")
+        .attr("fill", "black")
+        .text("track list");
+
+      // n/m (초기에는 빈 값, hover 시 갱신)
+      centerTextGroup.append("text")
+        .attr("class", "center-text-index")
+        .attr("y", 50)
+        .attr("font-size", "18px")
+        .attr("fill", "black")
+        .text("");
+
+      // 음악명 텍스트 제거
       sector.append("text")
           .attr("transform", d => {
               const angle = (d.startAngle + d.endAngle) / 2;
@@ -121,10 +159,10 @@ loadDetailPanel().then(() => {
           .attr("text-anchor", "middle")
           .attr("dy", "0.35em")
           .attr("font-size", "10px")
-          .text(d => d.data.name)
+          .text("") // 음악명 제거
           .attr("fill", "#333")
           .attr("pointer-events", "none");
-  
+
       // 범례 생성
       const legend = d3.select("#legend");
       attributes.forEach(attr => {
