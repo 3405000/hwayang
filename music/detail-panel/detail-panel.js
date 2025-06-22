@@ -9,8 +9,39 @@ function loadDetailPanel() {
                 return;
             }
             container.innerHTML = html;
+
+            // 여기서 detail-panel 내부 요소가 DOM에 생겼으니, 이 시점에만 리스너 등록!
+            const howToBtn2 = document.getElementById('how-to-btn2');
+            const overlay2 = document.getElementById('how-to-overlay2');
+            const closeBtn2 = document.getElementById('close-how-to-btn2');
+            const detailPanel = document.getElementById('detail-panel');
+
+            if (howToBtn2 && overlay2 && closeBtn2 && detailPanel) {
+                howToBtn2.addEventListener('click', function() {
+                    const rect = detailPanel.getBoundingClientRect();
+                    overlay2.style.display = 'flex';
+                    overlay2.style.position = 'fixed';
+                    overlay2.style.top = rect.top + 'px';
+                    overlay2.style.left = rect.left + 'px';
+                    overlay2.style.width = rect.width + 'px';
+                    overlay2.style.height = rect.height + 'px';
+                });
+
+                closeBtn2.addEventListener('click', function() {
+                    overlay2.style.display = 'none';
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        overlay2.style.display = 'none';
+                    }
+                });
+            } else {
+                console.error('오버레이/버튼 요소를 찾을 수 없습니다.');
+            }
         });
 }
+
 
 // 2. 음악 데이터 시각화 업데이트 함수
 // attributes와 colors는 외부에서 이미 정의되어 있다고 가정
@@ -111,4 +142,27 @@ function updateDetailPanel(data, colors) {
         attributesContainer.appendChild(row);
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const howToBtn2 = document.getElementById('how-to-btn2');
+    const overlay2 = document.getElementById('how-to-overlay2');
+    const closeBtn2 = document.getElementById('close-how-to-btn2');
+
+    if (howToBtn2 && overlay2 && closeBtn2) {
+        howToBtn2.addEventListener('click', function() {
+            overlay2.style.display = 'flex';
+        });
+
+        closeBtn2.addEventListener('click', function() {
+            overlay2.style.display = 'none';
+        });
+
+        // ESC 키로도 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                overlay2.style.display = 'none';
+            }
+        });
+    }
+});
 

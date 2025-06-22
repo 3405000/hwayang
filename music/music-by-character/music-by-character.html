@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <title>평가 항목별 시각화</title>
@@ -8,22 +9,31 @@
   <link rel="stylesheet" href="/music/detail-panel/detail-panel.style.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
+
 <body>
   <div id="nav-container"></div>
   <div class="container">
     <h2>음악 데이터 시각화</h2>
+    <button id="how-to-btn">읽는법</button>
     <div class="section">
       <div id="circle-container"></div>
       <div id="tooltip" class="tooltip"></div>
       <div id="buttons"></div>
 
     </div>
-    <!-- 오른쪽: 상세 패널 -->
-       <div id="detail-container"></div>
-  </div>
-  <script src="/music/navigation/navigation.js"></script>
-  <script src="/music/detail-panel/detail-panel.js"></script>
-  <script src="../../shared/colors.js"></script>
-  <script src="music-by-character.js"></script>
+    <!-- 읽는법 오버레이 박스 -->
+    <div id="how-to-overlay" style="display:none;">
+      <div class="how-to-box">
+        <button id="close-how-to-btn">읽는법</button>
+        <img src="music-by-character-legend.svg" alt="부채꼴 읽는법" class="how-to-legend-svg" />
+      </div>
+      <!-- 오른쪽: 상세 패널 -->
+      <div id="detail-container"></div>
+    </div>
+    <script src="/music/navigation/navigation.js"></script>
+    <script src="/music/detail-panel/detail-panel.js"></script>
+    <script src="../../shared/colors.js"></script>
+    <script src="music-by-character.js"></script>
 </body>
+
 </html>

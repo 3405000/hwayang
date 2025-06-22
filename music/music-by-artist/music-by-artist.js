@@ -129,3 +129,24 @@ d3.csv("../music-data.csv").then(function (csvData) {
     drawCircles();
     drawButtons(artistList, null);
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const howToBtn = document.getElementById('how-to-btn');
+    const overlay = document.getElementById('how-to-overlay');
+    const closeBtn = document.getElementById('close-how-to-btn');
+
+    howToBtn.addEventListener('click', function() {
+        overlay.style.display = 'flex';
+    });
+
+    closeBtn.addEventListener('click', function() {
+        overlay.style.display = 'none';
+    });
+
+    // ESC 키로도 닫기
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            overlay.style.display = 'none';
+        }
+    });
+});

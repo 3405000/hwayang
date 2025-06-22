@@ -10,6 +10,7 @@
 <body>
   <div id="nav-container"></div>
   <h2>음악가에 따른 음악</h2>
+  <button id="how-to-btn">읽는법</button>
   <div class="container">
     <div class="content-wrapper">
       <div id="circle-container"></div>
@@ -18,6 +19,12 @@
         <div id="buttons"></div>
       </div>
     </div>
+    <!-- 읽는법 오버레이 박스 -->
+    <div id="how-to-overlay" style="display:none;">
+      <div class="how-to-box">
+        <button id="close-how-to-btn">읽는법</button>
+        <img src="music-by-artist-legend.svg" alt="부채꼴 읽는법" class="how-to-legend-svg" />
+      </div>
   </div>
   <script src="/music/navigation/navigation.js"></script>
   <script src="../music-colors.js"></script>

@@ -78,3 +78,55 @@
     font-weight: 500;
     text-align: center;
 }
+
+#how-to-btn2,
+#close-how-to-btn2 {
+  display: block;
+  padding: 10px 13px;
+  border-radius: 30px;
+  border: 0;
+  background-color: #8D8D8D;
+  color: #fff;
+  margin: 0 auto;
+}
+
+#how-to-btn2:hover,
+#close-how-to-btn2:hover {
+  background: #6d6d6d;
+}
+
+#how-to-overlay2 {
+  position: fixed;
+  z-index: 2001;
+  display: none; /* 기본은 숨김 */
+  justify-content: center;
+  align-items: center;
+  /* width, height, top, left는 JS에서 동적으로 지정 */
+}
+
+
+.how-to-box2 {
+  width: 90%;           /* detail-panel에 맞게 */
+  height: 91%;
+  max-width: 95vw;
+  background: #ECECEC;
+  border: 2px solid #8D8D8D;
+  border-radius: 18px;
+  padding: 40px 20px 30px 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+.how-to-legend-svg2 {
+  max-width: 400px;
+  width: 100%;
+  margin-bottom: 22px;
+}
+
+#close-how-to-btn2 {
+  position: static;   /* 또는 이 줄을 아예 지워도 됨 */
+  display: block;
+  margin: 0 auto 18px auto; /* 위-오른쪽-아래-왼쪽 */
+}
