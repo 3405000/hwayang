@@ -1,3 +1,16 @@
+// music-colors.js가 먼저 로드되어 있어야 함
+const attributeKeys = ["Energy", "Danceability", "Happiness", "Acousticness", "Instrumentalness", "Liveness"];
+const buttonsContainer = document.getElementById('buttons');
+buttonsContainer.innerHTML = ''; // 혹시 모를 중복 방지
+
+attributeKeys.forEach(attr => {
+  const btn = document.createElement('button');
+  btn.className = attr.toLowerCase();
+  btn.textContent = attr;
+  btn.onclick = () => showCircles(attr); // showCircles는 이미 정의되어 있다고 가정
+  buttonsContainer.appendChild(btn);
+});
+
 // 전역 데이터 저장소
 let globalData = [];
 
@@ -47,7 +60,7 @@ function showCircles(attribute) {
 
   // 값의 최대값 기준으로 크기 보정
   const maxValue = Math.max(...globalData.map(d => d.attributes[attribute]));
-  const minSize = 0, maxSize = 50;
+  const minSize = 0, maxSize = 60;
 
   // 노드 데이터 생성
   const nodes = globalData.map((d, i) => {

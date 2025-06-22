@@ -1,6 +1,6 @@
 body {
   font-family: 'Noto Sans KR', Arial, sans-serif;
-  background: #f6f6fa;
+  background: #fffffb;
   margin: 0;
   padding: 20px;
   text-align: center;
@@ -10,33 +10,66 @@ body {
   margin: 0 auto;
 }
 .section {
-  background: #fff;
+  /* background: #fff; */
   /* border-radius: 30px; */
   /* box-shadow: 0 4px 18px rgba(0,0,0,0.08); */
   margin-bottom: 30px;
   padding: 20px;
 }
+/* 버튼 전체를 감싸는 박스 */
 #buttons {
+  border: 2px solid #8D8D8D;
+  border-radius: 30px;
+  display: inline-flex;
+  padding: 5px 5px;
+  justify-content: center;
+  gap: 0px;
   margin: 20px 0;
+  background: #fffffb;
 }
+
+/* 기본 버튼 스타일 */
 #buttons button {
-  background: #fff;
-  border: 1px solid #888;
+  border: none;
   border-radius: 20px;
   padding: 10px 22px;
-  margin: 0 6px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  background: #fff;
+  color: #333;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  font-weight: 600;
+  outline: none;
+  box-shadow: none;
 }
-#buttons button.active {
-  background: #3b82f6;
-  color: #fff;
-  border-color: #3b82f6;
+
+/* 각 버튼별 기본 색상(글씨색) */
+#buttons button.energy { color: #CD1A1A; }
+#buttons button.danceability { color: #F26C49; }
+#buttons button.happiness { color: #E9A751; }
+#buttons button.acousticness { color: #854F1C; }
+#buttons button.instrumentalness { color: #355D67; }
+#buttons button.liveness { color: #87B6A2; }
+
+/* 선택되지 않은 버튼은 테두리 없음 */
+#buttons button:not(.active) { border: none; }
+
+/* 활성화(선택)된 버튼: 배경색은 자신의 색, 글씨는 흰색 */
+#buttons button.energy.active { background: #CD1A1A; color: #fff; }
+#buttons button.danceability.active { background: #F26C49; color: #fff; }
+#buttons button.happiness.active { background: #E9A751; color: #fff; }
+#buttons button.acousticness.active { background: #854F1C; color: #fff; }
+#buttons button.instrumentalness.active { background: #355D67; color: #fff; }
+#buttons button.liveness.active { background: #87B6A2; color: #fff; }
+
+/* 호버 효과(선택 안된 버튼만) */
+#buttons button:not(.active):hover {
+  background: #f3f3f3;
 }
+
 #circle-container {
   position: relative;
-  height: 700px;
+  height: 750px;
   margin: 0 auto;
   overflow: hidden;
 }
@@ -55,8 +88,6 @@ body {
 }
 .circle:hover {
   z-index: 2;
-  box-shadow: 0 0 12px #3b82f6bb;
-  border: 2.5px solid #3b82f6;
 }
 .tooltip {
   position: absolute;
