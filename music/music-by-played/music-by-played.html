@@ -13,14 +13,23 @@
 
 <body>
     <div id="nav-container"></div>
-    <div class="container">
-        <h1>음악 속성 부채꼴 시각화</h1>
-        <div class="content-wrapper">
-            <div id="visualization"></div>
-            <div id="detail-container"></div>
-        </div>
+<div class="container">
+    <div class="container-header">
     </div>
+    <h1>음악 속성 부채꼴 시각화</h1>
+    <button id="how-to-btn">읽는법</button>
+    <div class="content-wrapper">
+        <div id="visualization"></div>
+        <div id="detail-container"></div>
+    </div>
+</div>
     <div id="legend"></div>
+
+<!-- 읽는법 오버레이 박스 -->
+<div id="how-to-overlay" style="display:none;">
+    <div class="how-to-box">
+        <button id="close-how-to-btn">읽는법</button>
+        <img src="music-by-played-legend.svg" alt="부채꼴 읽는법" class="how-to-legend-svg" />
     </div>
     <script src="/music/navigation/navigation.js"></script>
     <script src="/music/detail-panel/detail-panel.js"></script>
