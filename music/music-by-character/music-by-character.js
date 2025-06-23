@@ -7,7 +7,7 @@ attributeKeys.forEach(attr => {
   const btn = document.createElement('button');
   btn.className = attr.toLowerCase();
   btn.textContent = attr;
-  btn.onmouseover = () => showCircles(attr); // showCircles는 이미 정의되어 있다고 가정
+  btn.onclick = () => showCircles(attr); // showCircles는 이미 정의되어 있다고 가정
   buttonsContainer.appendChild(btn);
 });
 

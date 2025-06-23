@@ -63,15 +63,6 @@ h2 {
     width: 8px;
 }
 
-#buttons::-webkit-scrollbar-track {
-    /* background: #f1f1f1; */
-    /* border-radius: 4px; */
-}
-
-#buttons::-webkit-scrollbar-thumb {
-    /* background: #c1c1c1; */
-    /* border-radius: 4px; */
-}
 
 .artist-btn {
     padding: 10px 18px;
@@ -99,11 +90,6 @@ h2 {
     width: 54px;
     height: 54px;
     cursor: pointer;
-}
-
-.music-circle:hover {
-    /* transform: scale(1.15);
-    z-index: 2; */
 }
 
 .gray-circle {
