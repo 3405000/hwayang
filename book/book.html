@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Emotion Bubbles</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background-color: #fffef9;
+      overflow: auto; /* 스크롤 가능하게 */
+    }
+    .top-image {
+      width: 100vw;
+      max-width: 100%;
+      display: block;
+      margin: 0 auto;
+      /* 필요하면 height: auto; */
+    }
+    .content-wrapper {
+      position: relative;
+      width: 100vw;
+      min-height: 100vh;
+      /* 이미지와 겹치지 않도록 위쪽 여백 */
+      margin-top: 0;
+      /* 필요시 margin-top: 30px; */
+    }
+    .label {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 30px 0 0 30px;
+      /* absolute → static */
+      color: #E9A751;
+    }
+    .bubble-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      z-index: 0;
+    }
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+    }
+    .menu {
+      position: absolute;
+      top: 35%;
+      right: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .menu button {
+      background: none;
+      border: 2px solid transparent;
+      font-size: 16px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .menu button.active {
+      border-radius: 20px;
+    }
+    @media (max-width: 600px) {
+      .menu {
+        top: auto;
+        bottom: 30px;
+        right: 20px;
+      }
+      .label {
+        font-size: 18px;
+        margin: 20px 0 0 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 최상단 이미지 -->
+  <img src="book.svg" alt="Book" class="top-image" />
+
+  <!-- 기존 시각 요소를 감싸는 래퍼 -->
+  <div class="content-wrapper">
+    <div class="label" id="label">LOVELY</div>
+    <div class="bubble-container" id="bubbles"></div>
+    <div class="menu">
+      <button class="active" onclick="changeEmotion('LOVELY')">LOVELY</button>
+      <button onclick="changeEmotion('CALM')">CALM</button>
+      <button onclick="changeEmotion('MOTIVATING')">MOTIVATING</button>
+      <button onclick="changeEmotion('WARM')">WARM</button>
+      <button onclick="changeEmotion('CLEAR')">CLEAR</button>
+    </div>
+  </div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    const bubblePresets = {
+      LOVELY: {
+        color: '#E9A751',
+        bubbles: [
+          { size: 20, count: 1, opacity: 0.3 },
+          { size: 25, count: 6, opacity: 0.35 },
+          { size: 30, count: 4, opacity: 0.4 },
+          { size: 40, count: 4, opacity: 0.5 },
+          { size: 50, count: 3, opacity: 0.6 },
+        ]
+      },
+      CALM: {
+        color: '#A3825F',
+        bubbles: [
+          { size: 20, count: 2, opacity: 0.3 },
+          { size: 30, count: 4, opacity: 0.4 },
+          { size: 40, count: 5, opacity: 0.5 },
+          { size: 50, count: 4, opacity: 0.6 },
+          { size: 60, count: 3, opacity: 0.7 },
+        ]
+      },
+      MOTIVATING: {
+        color: '#B7E2D0',
+        bubbles: [
+          { size: 25, count: 6, opacity: 0.3 },
+          { size: 30, count: 6, opacity: 0.35 },
+          { size: 40, count: 8, opacity: 0.4 },
+          { size: 50, count: 6, opacity: 0.5 },
+        ]
+      },
+      WARM: {
+        color: '#E16B6B',
+        bubbles: [
+          { size: 30, count: 4, opacity: 0.4 },
+          { size: 35, count: 3, opacity: 0.45 },
+          { size: 50, count: 3, opacity: 0.6 },
+        ]
+      },
+      CLEAR: {
+        color: '#6B8E96',
+        bubbles: [
+          { size: 25, count: 4, opacity: 0.4 },
+          { size: 30, count: 5, opacity: 0.45 },
+          { size: 40, count: 6, opacity: 0.5 },
+          { size: 50, count: 4, opacity: 0.6 },
+        ]
+      }
+    };
+
+    function generateBubbles(emotion) {
+      const { color, bubbles } = bubblePresets[emotion];
+      const container = document.getElementById('bubbles');
+      container.innerHTML = '';
+      document.getElementById('label').textContent = emotion;
+      document.getElementById('label').style.color = color;
+
+      const nodes = [];
+      bubbles.forEach(({ size, count, opacity }) => {
+        for (let i = 0; i < count; i++) {
+          nodes.push({
+            size,
+            r: size / 2,
+            color,
+            opacity,
+            x: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
+            y: window.innerHeight / 2 + (Math.random() - 0.5) * 200
+          });
+        }
+      });
+
+      const simulation = d3.forceSimulation(nodes)
+        .force("collide", d3.forceCollide().radius(d => d.r + 1).iterations(3))
+        .force("center", d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
+        .force("charge", d3.forceManyBody().strength(5))
+        .on("tick", () => {
+          container.innerHTML = '';
+          nodes.forEach(d => {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.style.width = `${d.size}px`;
+            bubble.style.height = `${d.size}px`;
+            bubble.style.backgroundColor = d.color;
+            bubble.style.opacity = d.opacity;
+            bubble.style.left = `${d.x - d.r}px`;
+            bubble.style.top = `${d.y - d.r}px`;
+            container.appendChild(bubble);
+          });
+        });
+    }
+
+    function changeEmotion(emotion) {
+      document.querySelectorAll('.menu button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent === emotion) {
+          btn.classList.add('active');
+          btn.style.borderColor = bubblePresets[emotion].color;
+          btn.style.color = bubblePresets[emotion].color;
+        } else {
+          btn.style.borderColor = 'transparent';
+          btn.style.color = bubblePresets[emotion].color;
+        }
+      });
+      generateBubbles(emotion);
+    }
+
+    generateBubbles('LOVELY');
+  </script>
+</body>
+</html>

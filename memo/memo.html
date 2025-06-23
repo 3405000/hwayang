@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>쪽지별 감정 시각화 통합</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+  <!-- D3.js -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <style>
+    body {
+      background: #FFFFFB;
+      font-family: 'Pretendard', sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .chart-container {
+      width: 100%;
+      max-width: 480px;
+      height: 320px;
+      position: relative;
+      margin-bottom: 100px;
+    }
+
+    .bubble-chart text {
+      text-anchor: middle;
+      dominant-baseline: middle;
+      fill: #fff;
+    }
+
+    .highlight {
+      display: inline;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    .entry-list {
+      max-height: 800px;
+      overflow-y: auto;
+      width: 300px;
+      margin-right: 20px;
+      box-sizing: border-box;
+    }
+
+    .entry {
+      padding: 4px 10px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .bubble-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      margin-bottom: 100px;
+    }
+
+    svg {
+      margin-top: 20px;
+      flex-shrink: 0;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 9999;
+    }
+
+    circle {
+      transition: fill 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <!-- 파이 차트 -->
+  <h2>감정 카테고리 비율</h2>
+  <div class="chart-container">
+    <canvas id="emotionChart"></canvas>
+  </div>
+
+  <!-- 버블 차트 -->
+  <div class="bubble-wrapper">
+    <div class="entry-list" id="entryList"></div>
+    <svg width="800" height="600" class="bubble-chart"></svg>
+  </div>
+  <div id="tooltip" class="tooltip" style="display: none;"></div>
+
+  <!-- Chart.js 스크립트 -->
+  <script>
+    const sortedEmotions = [
+      { emotion: '사랑', count: 20, color: '#B72F3F' },
+      { emotion: '감사', count: 7, color: '#854F1C' },
+      { emotion: '격려', count: 6, color: '#4B3F72' },
+      { emotion: '희망', count: 6, color: '#87B6A2' },
+      { emotion: '행복', count: 6, color: '#B99A4C' },
+      { emotion: '추억', count: 5, color: '#78624D' },
+      { emotion: '소망', count: 3, color: '#ACCAB2' },
+      { emotion: '성찰', count: 2, color: '#355D67' },
+      { emotion: '운명', count: 1, color: '#482018' },
+      { emotion: '배려', count: 1, color: '#ACCAB2' },
+      { emotion: '분노', count: 1, color: '#992C10' }
+    ];
+
+    const labels = sortedEmotions.map(item => `${item.emotion} (${item.count}회)`);
+    const data = sortedEmotions.map(item => item.count);
+    const originalColors = sortedEmotions.map(item => item.color);
+    const transparentColors = originalColors.map(color => color + '88');
+
+    new Chart(document.getElementById('emotionChart'), {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: transparentColors,
+          hoverBackgroundColor: originalColors,
+          borderColor: '#ffffff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#333',
+              font: { size: 14 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const value = context.raw;
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${context.label} - ${percentage}%`;
+              }
+            }
+          },
+          datalabels: {
+            color: '#000',
+            font: {
+              size: 6
+            },
+            formatter: (value, context) => {
+              const label = context.chart.data.labels[context.dataIndex].split(' ')[0];
+              return label;
+            }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+  </script>
+
+  <!-- D3 버블 차트 스크립트 -->
+  <script>
+    const emotionData = [
+      { name: '사랑', value: 19, color: '#B72F3F' },
+      { name: '행복', value: 7, color: '#B99A4C' },
+      { name: '감사', value: 7, color: '#854F1C' },
+      { name: '격려', value: 7, color: '#4B3F72' },
+      { name: '희망', value: 6, color: '#87B6A2' },
+      { name: '추억', value: 5, color: '#78624D' },
+      { name: '소망', value: 3, color: '#ACCAB2' },
+      { name: '성찰', value: 2, color: '#355D67' },
+      { name: '운명', value: 1, color: '#482018' },
+      { name: '배려', value: 1, color: '#ACCAB2' },
+      { name: '분노', value: 1, color: '#992C10' }
+    ];
+
+    const entries = [
+      '행복', '사랑', '사랑', '성찰', '감사', '감사', '사랑', '사랑', '사랑', '소망',
+      '행복', '운명', '격려', '격려', '격려', '행복', '격려', '감사', '희망', '배려',
+      '사랑', '희망', '사랑', '분노', '성찰', '감사', '사랑', '사랑', '소망', '사랑',
+      '희망', '추억', '추억', '사랑', '소망', '행복', '행복', '희망', '행복', '희망',
+      '사랑', '사랑', '희망', '격려', '추억', '추억', '행복', '감사', '사랑', '감사',
+      '사랑', '사랑', '사랑', '격려', '사랑', '격려', '추억', '사랑', '추억', '감사'
+    ];
+
+    const total = emotionData.reduce((sum, d) => sum + d.value, 0);
+    emotionData.forEach(d => {
+      d.percent = ((d.value / total) * 100).toFixed(1);
+    });
+
+    const svg = d3.select("svg");
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+
+    const pack = d3.pack().size([width, height]).padding(10);
+    const root = d3.hierarchy({ children: emotionData }).sum(d => d.value);
+    const nodes = pack(root).leaves();
+
+    const tooltip = document.getElementById("tooltip");
+    const entryList = document.getElementById("entryList");
+
+    const node = svg.selectAll("g")
+      .data(nodes)
+      .enter().append("g")
+      .attr("transform", d => `translate(${d.x},${d.y})`)
+      .on("click", (event, d) => {
+        highlightEntries(d.data.name, d.data.color);
+
+        svg.selectAll("circle")
+          .attr("fill", function() {
+            return this.getAttribute("data-original") + '55';
+          });
+
+        d3.select(event.currentTarget).select("circle")
+          .attr("fill", d.data.color); // 원래 진한 색으로!
+      })
+      .on("mousemove", (event, d) => {
+        tooltip.style.display = "block";
+        tooltip.style.left = event.pageX + 10 + "px";
+        tooltip.style.top = event.pageY + 10 + "px";
+        tooltip.innerText = `${d.data.name}: ${d.data.value}회 (${d.data.percent}%)`;
+      })
+      .on("mouseleave", () => {
+        tooltip.style.display = "none";
+      });
+
+    node.append("circle")
+      .attr("r", d => d.r)
+      .attr("fill", d => d.data.color + '55') // 처음엔 투명
+      .attr("data-original", d => d.data.color);
+
+    node.append("text")
+      .text(d => d.data.name)
+      .style("font-size", d => Math.min(2 * d.r / d.data.name.length, 24) + "px");
+
+    function highlightEntries(category, color) {
+      entryList.innerHTML = '';
+      entries.forEach((text, i) => {
+        const div = document.createElement('div');
+        div.className = 'entry';
+        const regex = new RegExp(`(${category})`, 'g');
+        const highlighted = text.replace(regex, match => `<span class="highlight" style="background-color:${color}55">${match}</span>`);
+        div.innerHTML = `<strong>${i + 1}.</strong> ${highlighted}`;
+        entryList.appendChild(div);
+      });
+    }
+
+    entryList.innerHTML = '<p>버블을 클릭하면 해당 감정이 강조되며 관련 쪽지가 하이라이트됩니다.</p>';
+  </script>
+</body>
+</html>
