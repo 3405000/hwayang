@@ -79,15 +79,13 @@ d3.csv("../music-data.csv").then(function (csvData) {
                 .attr("transform", `translate(${x},${y})`);
 
             if (isActive) {
-                // 왼쪽 반원 (상위 1순위 값) - 90도 회전 적용
                 g.append("path")
                     .attr("d", describeArc(0, 0, circleSize / 2, 0, 180))
-                    .attr("fill", colors[first.key]);
+                    .attr("fill", colors[second.key]); // 왼쪽 반원: 2순위 값
 
-                // 오른쪽 반원 (상위 2순위 값) - 90도 회전 적용
                 g.append("path")
                     .attr("d", describeArc(0, 0, circleSize / 2, 180, 360))
-                    .attr("fill", colors[second.key]);
+                    .attr("fill", colors[first.key]); // 오른쪽 반원: 1순위 값
             } else {
                 // 회색 원 (비활성 상태)
                 g.append("circle")
@@ -130,21 +128,21 @@ d3.csv("../music-data.csv").then(function (csvData) {
     drawButtons(artistList, null);
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const howToBtn = document.getElementById('how-to-btn');
     const overlay = document.getElementById('how-to-overlay');
     const closeBtn = document.getElementById('close-how-to-btn');
 
-    howToBtn.addEventListener('click', function() {
+    howToBtn.addEventListener('click', function () {
         overlay.style.display = 'flex';
     });
 
-    closeBtn.addEventListener('click', function() {
+    closeBtn.addEventListener('click', function () {
         overlay.style.display = 'none';
     });
 
     // ESC 키로도 닫기
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             overlay.style.display = 'none';
         }
