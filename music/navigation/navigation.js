@@ -1,5 +1,5 @@
 // 네비게이션 active 처리
-fetch('/music/navigation/navigation.html')
+fetch('../navigation/navigation.html')
     .then(response => response.text())
     .then(html => {
         document.getElementById('nav-container').innerHTML = html;

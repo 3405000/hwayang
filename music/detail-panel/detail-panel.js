@@ -1,6 +1,6 @@
 // 1. 상세 패널 HTML 로드
 function loadDetailPanel() {
-    return fetch('/music/detail-panel/detail-panel.html')
+    return fetch('../detail-panel/detail-panel.html')
         .then(response => response.text())
         .then(html => {
             const container = document.getElementById('detail-container');
