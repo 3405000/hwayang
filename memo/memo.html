@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>쪽지별 감정 시각화 통합</title>
-
-  <!-- Chart.js -->
+  <meta charset="UTF-8" />
+  <title>쪽지 감정 시각화 + 버튼 이미지 보기</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-
-  <!-- D3.js -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
-
   <style>
     body {
       background: #FFFFFB;
@@ -21,32 +16,27 @@
       flex-direction: column;
       align-items: center;
     }
-
     h2 {
       margin-bottom: 8px;
       color: #333;
     }
-
     .chart-container {
       width: 100%;
       max-width: 480px;
       height: 320px;
       position: relative;
-      margin-bottom: 100px;
+      margin-bottom: 80px;
     }
-
     .bubble-chart text {
       text-anchor: middle;
       dominant-baseline: middle;
       fill: #fff;
     }
-
     .highlight {
       display: inline;
       padding: 0 2px;
       border-radius: 2px;
     }
-
     .entry-list {
       max-height: 800px;
       overflow-y: auto;
@@ -54,24 +44,20 @@
       margin-right: 20px;
       box-sizing: border-box;
     }
-
     .entry {
       padding: 4px 10px;
       border-bottom: 1px solid #ccc;
     }
-
     .bubble-wrapper {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
       margin-bottom: 100px;
     }
-
     svg {
       margin-top: 20px;
       flex-shrink: 0;
     }
-
     .tooltip {
       position: absolute;
       background: rgba(0, 0, 0, 0.75);
@@ -83,27 +69,117 @@
       white-space: nowrap;
       z-index: 9999;
     }
-
     circle {
       transition: fill 0.3s ease;
+    }
+
+    /* --- 여기부터 쪽지 버튼 & 이미지 보기 스타일 --- */
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 12px;
+      max-width: 480px;
+      width: 100%;
+      margin: 40px 0;
+    }
+
+    .btn {
+      background-color: #FFFFFF;
+      border: 3px solid #854F1C;
+      border-radius: 12px 12px 4px 4px; /* 위는 둥글게, 아래는 덜 둥글게 */
+      width: 60px;
+      height: 60px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #854F1C;
+      cursor: pointer;
+      box-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+      transition: transform 0.1s ease, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-viewer {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .image-viewer img {
+      max-width: 90vw;
+      max-height: 80vh;
+      cursor: pointer;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
   </style>
 </head>
 <body>
-  <!-- 파이 차트 -->
+
+  <!-- Slide1, Slide2 이미지 고정 -->
+  <img src="Slide1.png" alt="Slide 1" width="1280" />
+  <img src="Slide2.png" alt="Slide 2" width="1280" />
+
+  <!-- 쪽지 버튼 & 이미지 보기 -->
+  <div id="buttonGrid" class="button-grid">
+    <!-- 버튼들은 JS로 생성됩니다 -->
+  </div>
+
+  <div id="imageViewer" class="image-viewer">
+    <img id="displayImage" src="" alt="쪽지 이미지" />
+  </div>
+
+  <script>
+    const buttonGrid = document.getElementById('buttonGrid');
+    const imageViewer = document.getElementById('imageViewer');
+    const displayImage = document.getElementById('displayImage');
+
+    // 1~60번 버튼 생성
+    for (let i = 1; i <= 60; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      btn.innerText = i;
+      btn.onclick = () => showImage(i);
+      buttonGrid.appendChild(btn);
+    }
+
+    function showImage(num) {
+      displayImage.src = `${num}.png`; // 이미지 파일명 패턴 (1.png, 2.png, ...)
+      buttonGrid.style.display = 'none';
+      imageViewer.style.display = 'flex';
+    }
+
+    // 이미지 클릭 시 다시 버튼 목록 보이기
+    displayImage.onclick = () => {
+      imageViewer.style.display = 'none';
+      buttonGrid.style.display = 'grid';
+    };
+  </script>
+
+  <!-- Slide3 이미지 고정 -->
+  <img src="Slide3.png" alt="Slide 3" width="1280" />
+
+  <!-- 기존 감정 비율 차트와 쪽지별 감정 시각화 계속 -->
   <h2>감정 카테고리 비율</h2>
   <div class="chart-container">
     <canvas id="emotionChart"></canvas>
   </div>
 
-  <!-- 버블 차트 -->
+  <img src="Slide4.png" alt="Slide 4" width="1280" />
+  <img src="Slide5.png" alt="Slide 5" width="1280" />
+
+  <h2>쪽지별 감정 시각화</h2>
   <div class="bubble-wrapper">
     <div class="entry-list" id="entryList"></div>
     <svg width="800" height="600" class="bubble-chart"></svg>
   </div>
   <div id="tooltip" class="tooltip" style="display: none;"></div>
 
-  <!-- Chart.js 스크립트 -->
   <script>
     const sortedEmotions = [
       { emotion: '사랑', count: 20, color: '#B72F3F' },
@@ -159,9 +235,7 @@
           },
           datalabels: {
             color: '#000',
-            font: {
-              size: 6
-            },
+            font: { size: 6 },
             formatter: (value, context) => {
               const label = context.chart.data.labels[context.dataIndex].split(' ')[0];
               return label;
@@ -171,10 +245,7 @@
       },
       plugins: [ChartDataLabels]
     });
-  </script>
 
-  <!-- D3 버블 차트 스크립트 -->
-  <script>
     const emotionData = [
       { name: '사랑', value: 19, color: '#B72F3F' },
       { name: '행복', value: 7, color: '#B99A4C' },
@@ -190,12 +261,12 @@
     ];
 
     const entries = [
-      '행복', '사랑', '사랑', '성찰', '감사', '감사', '사랑', '사랑', '사랑', '소망',
-      '행복', '운명', '격려', '격려', '격려', '행복', '격려', '감사', '희망', '배려',
-      '사랑', '희망', '사랑', '분노', '성찰', '감사', '사랑', '사랑', '소망', '사랑',
-      '희망', '추억', '추억', '사랑', '소망', '행복', '행복', '희망', '행복', '희망',
-      '사랑', '사랑', '희망', '격려', '추억', '추억', '행복', '감사', '사랑', '감사',
-      '사랑', '사랑', '사랑', '격려', '사랑', '격려', '추억', '사랑', '추억', '감사'
+      '행복','사랑','사랑','성찰','감사','감사','사랑','사랑','사랑','소망',
+      '행복','운명','격려','격려','격려','행복','격려','감사','희망','배려',
+      '사랑','희망','사랑','분노','성찰','감사','사랑','사랑','소망','사랑',
+      '희망','추억','추억','사랑','소망','행복','행복','희망','행복','희망',
+      '사랑','사랑','희망','격려','추억','추억','행복','감사','사랑','감사',
+      '사랑','사랑','사랑','격려','사랑','격려','추억','사랑','추억','감사'
     ];
 
     const total = emotionData.reduce((sum, d) => sum + d.value, 0);
@@ -220,14 +291,11 @@
       .attr("transform", d => `translate(${d.x},${d.y})`)
       .on("click", (event, d) => {
         highlightEntries(d.data.name, d.data.color);
-
-        svg.selectAll("circle")
-          .attr("fill", function() {
-            return this.getAttribute("data-original") + '55';
-          });
-
+        svg.selectAll("circle").attr("fill", function() {
+          return this.getAttribute("data-original") + '55';
+        });
         d3.select(event.currentTarget).select("circle")
-          .attr("fill", d.data.color); // 원래 진한 색으로!
+          .attr("fill", d.data.color);
       })
       .on("mousemove", (event, d) => {
         tooltip.style.display = "block";
@@ -241,7 +309,7 @@
 
     node.append("circle")
       .attr("r", d => d.r)
-      .attr("fill", d => d.data.color + '55') // 처음엔 투명
+      .attr("fill", d => d.data.color + '55')
       .attr("data-original", d => d.data.color);
 
     node.append("text")
