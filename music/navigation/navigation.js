@@ -4,19 +4,15 @@ fetch('../navigation/navigation.html')
     .then(html => {
         document.getElementById('nav-container').innerHTML = html;
 
-        // 네비게이션 바가 삽입된 후 active 클래스 부여
+        // 네비게이션 바가 삽입된 후 active 클래스 부여 (수정된 부분)
         const path = window.location.pathname;
-        const navMap = {
-            '/music/music-overview/music-overview.html': 'nav-overview',
-            '/music/music-by-played/music-by-played.html': 'nav-time',
-            '/music/music-by-published/music-by-published.html': 'nav-published',
-            '/music/music-by-character/music-by-character.html': 'nav-character',
-            '/music/music-by-artist/music-by-artist.html': 'nav-artist'
-        };
-        const activeId = navMap[path];
-        if (activeId) {
-            document.getElementById(activeId).classList.add('active');
-        }
+        document.querySelectorAll('.nav-item').forEach(link => {
+            // link.href는 전체 URL이므로 pathname만 비교
+            const linkPath = new URL(link.href).pathname;
+            if (linkPath === path) {
+                link.classList.add('active');
+            }
+        });
 
         // color-legend 동작 (navigation.html에 이미 포함되어 있으므로 여기서 바로 실행)
         if (document.querySelector('.color-legend')) {
