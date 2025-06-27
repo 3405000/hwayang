@@ -26,9 +26,9 @@ loadDetailPanel().then(() => {
 
     // 부채꼴 시각화 생성 함수
     function createRadialVisualization(data) {
-        const width = 900;
-        const height = 900;
-        const radius = 800 / 2;
+        const width = 600;
+        const height = 600;
+        const radius = 500 / 2;
         const centerRadius = radius * 0.25;
         const maxAttributeRadius = radius * 0.75;
 
@@ -126,8 +126,8 @@ loadDetailPanel().then(() => {
         // 花樣年華
         centerTextGroup.append("text")
             .attr("class", "center-text-main")
-            .attr("y", -5)
-            .attr("font-size", "36px")
+            .attr("y", -2)
+            .attr("font-size", "30px")
             .attr("font-weight", "bold")
             .attr("fill", "#854F1C")
             .text("花樣年華");
@@ -136,15 +136,15 @@ loadDetailPanel().then(() => {
         centerTextGroup.append("text")
             .attr("class", "center-text-sub")
             .attr("y", 20)
-            .attr("font-size", "20px")
+            .attr("font-size", "16px")
             .attr("fill", "black")
             .text("track list");
 
         // n/m (초기에는 빈 값, hover 시 갱신)
         centerTextGroup.append("text")
             .attr("class", "center-text-index")
-            .attr("y", 50)
-            .attr("font-size", "18px")
+            .attr("y", 40)
+            .attr("font-size", "12px")
             .attr("fill", "black")
             .text("");
 
@@ -178,7 +178,7 @@ loadDetailPanel().then(() => {
         });
 
         // 원의 바깥쪽 반지름 (테두리에서 살짝 바깥)
-        const labelRadius = maxAttributeRadius + 120; // maxAttributeRadius는 이미 위에서 정의됨
+        const labelRadius = maxAttributeRadius + 100; // maxAttributeRadius는 이미 위에서 정의됨
 
         // 각도와 라벨 정의 (라디안 단위)
         const angleLabels = [

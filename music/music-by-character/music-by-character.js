@@ -60,7 +60,7 @@ function showCircles(attribute) {
 
   // 값의 최대값 기준으로 크기 보정
   const maxValue = Math.max(...globalData.map(d => d.attributes[attribute]));
-  const minSize = 0, maxSize = 60;
+  const minSize = 0, maxSize = 45;
 
   // 노드 데이터 생성
   const nodes = globalData.map((d, i) => {

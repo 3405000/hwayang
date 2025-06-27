@@ -42,7 +42,7 @@ function drawYearCircles(data) {
   // 3. SVG 영역 크기 계산
   const rowHeight = 70;
   const margin = { left: 70, top: 30, right: 20, bottom: 30 };
-  const circleRadius = 28;
+  const circleRadius = 24;
   const circleGap = circleRadius * 2 + 10; // 원 사이 간격
 
   // 4. 교차 배치 좌표 계산 (홀수/짝수 행 교차)

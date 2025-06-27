@@ -6,13 +6,16 @@ body {
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 40px auto;
-    margin-left: 400px;
+    margin-left: 350px;
     padding: 24px;
 }
 
-h2 {
+h1 {
+    text-align: center;
+}
+h3 {
     color: #2c3e50;
     text-align: center;
     margin-bottom: 30px;
@@ -28,7 +31,7 @@ h2 {
     flex: 1;
     display: flex;
     flex-wrap: wrap;
-    gap: 20px 18px;
+    gap: 20px 15px;
     justify-content: flex-start;
     padding: 15px;
     max-height: 80vh;
@@ -36,7 +39,7 @@ h2 {
 }
 
 #artist-panel {
-    width: 280px;
+    width: 250px;
     background: #f8f9fa;
     border-radius: 12px;
     padding: 20px;
@@ -127,7 +130,7 @@ h2 {
 }
 
 .how-to-box {
-  width: 1000px;
+  width: 700px;
   max-width: 95vw;
   background: #ECECEC;
   border: 2px solid #8D8D8D;
@@ -142,7 +145,7 @@ h2 {
 }
 
 .how-to-legend-svg {
-  max-width: 800px;
+  max-width: 550px;
   width: 100%;
   margin-bottom: 22px;
 }

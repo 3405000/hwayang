@@ -48,7 +48,7 @@ d3.csv("../music-data.csv").then(function (csvData) {
         const container = d3.select("#circle-container");
         container.html("");
 
-        const circleSize = 54;
+        const circleSize = 40;
         const circlesPerRow = 15; // 한 행에 15개씩
         const svgWidth = circlesPerRow * (circleSize + 10);
         const svgHeight = Math.ceil(csvData.length / circlesPerRow) * (circleSize + 18);
