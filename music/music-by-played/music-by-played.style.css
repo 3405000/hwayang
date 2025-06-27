@@ -117,7 +117,7 @@ h1 {
 }
 
 .how-to-box {
-  width: 1000px;
+  width: 700px;
   max-width: 95vw;
   background: #ECECEC;
   border: 2px solid #8D8D8D;
@@ -132,7 +132,7 @@ h1 {
 }
 
 .how-to-legend-svg {
-  max-width: 800px;
+  max-width: 550px;
   width: 100%;
   margin-bottom: 22px;
 }

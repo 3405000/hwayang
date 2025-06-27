@@ -20,7 +20,7 @@
 }
 
 .nav-top {
-    font-size: 40px;
+    font-size: 30px;
     font-weight: 800;
     margin-bottom: 40px;
     cursor: pointer;
@@ -36,20 +36,20 @@
 }
 
 .nav-item {
-    padding: 15px 20px;
+    padding: 10px 10px;
     border-radius: 10px;
     cursor: pointer;
     color: #000000;
     text-decoration: none;
     display: flex;
     align-items: center;
-    font-size: 20px;
+    font-size: 16px;
     position: relative;
     overflow: hidden;
 }
 
 .nav-item.active {
-    font-size: 26px;
+    font-size: 24px;
     color: #000000;
     font-weight: bold;
 }
@@ -69,9 +69,9 @@
 }
 
 .nav-back {
-    width: 40px;
-    height: 40px;
-    margin: 30px 0;
+    width: 30px;
+    height: 30px;
+    margin: 10px 0;
     cursor: pointer;
     display: block;
 }
@@ -92,7 +92,7 @@
 .color-legend {
     height: 300px;
     margin-top: auto;
-    padding: 30px 0 0 0;
+    padding: 20px 0 0 0;
     max-width: 500px;
     width: 100%;
     text-align: left;
