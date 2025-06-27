@@ -1,36 +1,36 @@
 :root {
-  --energy: #CD1A1A;
-  --danceability: #F26C49;
-  --happiness: #E9A751;
-  --acousticness: #854F1C;
-  --instrumentalness: #355D67;
-  --liveness: #87B6A2;
-  --text-dark: #333;
-  --text-light: #666;
-  --bg-light: #f8f9fa;
+  --energy-l: #CD1A1A;
+  --danceability-l: #F26C49;
+  --happiness-l: #E9A751;
+  --acousticness-l: #854F1C;
+  --instrumentalness-l: #355D67;
+  --liveness-l: #87B6A2;
+  --text-dark-l: #333;
+  --text-light-l: #666;
+  --bg-light-l: #f8f9fa;
 }
 
-.color-legend {
+.color-legend-l {
   padding: 30px;
+  padding-bottom: 300px;
   max-width: 500px;
   width: 100%;
-  text-align: left; /* 왼쪽 정렬 */
+  text-align: left;
 }
 
-.color-legend .attribute-title {
+.color-legend-l .attribute-title-l {
   color: #222 !important;
 }
 
-
-.buttons-container {
+.buttons-container-l {
   display: flex;
-  justify-content: flex-start; /* 왼쪽 정렬 */
+  justify-content: flex-start;
   flex-wrap: wrap;
   gap: 18px;
   margin-bottom: 20px;
 }
 
-.color-button {
+.color-button-l {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -39,23 +39,23 @@
   position: relative;
 }
 
-.color-button.active {
+.color-button-l.active-l {
   box-shadow: 0 0 0 3px black, 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.button-label {
-  display: none; /* 이름 숨기기 */
+.button-label-l {
+  display: none;
 }
 
-.description-container {
+.description-container-l {
   padding: 10px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  text-align: left; /* 왼쪽 정렬 */
+  text-align: left;
 }
 
-.attribute-title {
+.attribute-title-l {
   font-size: 2rem;
   font-weight: 800;
   color: #222;
@@ -63,61 +63,56 @@
   letter-spacing: 0.02em;
 }
 
-
-.attribute-subtitle {
+.attribute-subtitle-l {
   font-size: 18px;
-  color: var(--text-light);
+  color: var(--text-light-l);
   margin-bottom: 10px;
   font-weight: 500;
 }
 
-.attribute-description {
+.attribute-description-l {
   font-size: 1.1rem;
   line-height: 1.6;
-  color: var(--text-dark);
+  color: var(--text-dark-l);
 }
 
-.default-message {
+.default-message-l {
   text-align: left;
   font-size: 18rem;
-  color: var(--text-light);
+  color: var(--text-light-l);
 }
 
 /* Color classes */
-.energy-bg { background-color: var(--energy); }
-.danceability-bg { background-color: var(--danceability); }
-.happiness-bg { background-color: var(--happiness); }
-.acousticness-bg { background-color: var(--acousticness); }
-.instrumentalness-bg { background-color: var(--instrumentalness); }
-.liveness-bg { background-color: var(--liveness); }
+.energy-bg-l { background-color: var(--energy-l); }
+.danceability-bg-l { background-color: var(--danceability-l); }
+.happiness-bg-l { background-color: var(--happiness-l); }
+.acousticness-bg-l { background-color: var(--acousticness-l); }
+.instrumentalness-bg-l { background-color: var(--instrumentalness-l); }
+.liveness-bg-l { background-color: var(--liveness-l); }
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .buttons-container {
+  .buttons-container-l {
     gap: 15px;
   }
-  
-  .color-button {
+  .color-button-l {
     width: 50px;
     height: 50px;
   }
-  
-  .attribute-title {
+  .attribute-title-l {
     font-size: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .buttons-container {
+  .buttons-container-l {
     gap: 12px;
   }
-  
-  .color-button {
+  .color-button-l {
     width: 45px;
     height: 45px;
   }
-  
-  .button-label {
+  .button-label-l {
     font-size: 0.75rem;
   }
 }
